@@ -44,13 +44,15 @@ public class Start {
                 .createDefault(PORT_MAIN, "Main")
                 .implEvent(MainEventHandler.class)
                 .defaultRouter()
+                .listenPort()
                 .start();
 
         log.info("starting s$ct server");
         CreateServer
-                .createDefault(PORT_INTER, "S$Ct")
+                .createDefault("S$Ct")
                 .implEvent(S$CtEventHandler.class)
                 .defaultFixRouter(Runtime.getRuntime().availableProcessors() * 2, 3)
+                .listenPort(PORT_INTER)
                 .start();
 
         ClientTransThread.init();
