@@ -36,14 +36,14 @@ public class Start {
         MsgTransfer.init(
                 32,
                 MSG_BODY_LENGTH_MAX,
-                ThreadUtil.createQyFixedThreadPool(Runtime.getRuntime().availableProcessors() * 3 / 2, "transPool", null)
+                ThreadUtil.createQyFixedThreadPool(Runtime.getRuntime().availableProcessors() * 3, "transPool", null)
         );
 
         log.info("starting main server");
         CreateServer
                 .createDefault(PORT_MAIN, "Main")
                 .implEvent(MainEventHandler.class)
-                .defaultRouter()
+                .defaultFixRouter(16)
                 .listenPort()
                 .start();
 
@@ -51,7 +51,7 @@ public class Start {
         CreateServer
                 .createDefault("S$Ct")
                 .implEvent(S$CtEventHandler.class)
-                .defaultFixRouter(Runtime.getRuntime().availableProcessors() * 2, 3)
+                .defaultFixRouter(8,4)
                 .listenPort(PORT_INTER)
                 .start();
 
