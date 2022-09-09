@@ -120,7 +120,7 @@ public class MainEventHandler extends EventHandler {
             }
         } catch (ExecutionException e) {
             log.error("", e);
-            if (e.getMessage().contains("NumberFormatException"))
+            if (e.getMessage().matches(".*(NumberFormatException|Cannot.*Boolean[.]booleanValue).*"))
                 RecordIpThread.execute(ip.get());
             SocketChannel a = socketChannel_C.get();
             if (a != null) {
