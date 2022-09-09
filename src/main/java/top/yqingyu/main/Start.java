@@ -40,25 +40,25 @@ public class Start {
                 ThreadUtil.createQyFixedThreadPool(Runtime.getRuntime().availableProcessors() * 3, "transPool", null)
         );
 
-        log.info("starting main server");
-        CreateServer
-                .createDefault(PORT_MAIN, "Main")
-                .implEvent(MainEventHandler.class)
-                .defaultFixRouter(16)
-                .listenPort()
-                .start();
+//        log.info("starting main server");
+//        CreateServer
+//                .createDefault(PORT_MAIN, "Main")
+//                .implEvent(MainEventHandler.class)
+//                .defaultFixRouter(16)
+//                .listenPort()
+//                .start();
+//
+//        log.info("starting s$ct server");
+//        CreateServer
+//                .createDefault("S$Ct")
+//                .implEvent(S$CtEventHandler.class)
+//                .defaultFixRouter(8,4)
+//                .listenPort(PORT_INTER)
+//                .start();
 
-        log.info("starting s$ct server");
-        CreateServer
-                .createDefault("S$Ct")
-                .implEvent(S$CtEventHandler.class)
-                .defaultFixRouter(8,4)
-                .listenPort(PORT_INTER)
-                .start();
-
 
         CreateServer
-                .createDefault(80,"http")
+                .createDefault(8080,"http")
                 .implEvent(HttpEventHandler.class)
                 .defaultFixRouter(8,4)
                 .listenPort()

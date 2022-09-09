@@ -31,28 +31,49 @@ public class HttpEventHandler extends EventHandler {
     public void read(Selector selector, SelectionKey selectionKey) throws IOException {
         SocketChannel socketChannel = (SocketChannel) selectionKey.channel();
 
-        ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
 
-        int length = 0;
-        boolean readEnd = false;
-        while (!readEnd) {
-            while ((length = socketChannel.read(byteBuffer)) > 0) {
-                byteBuffer.flip();
-                String tmp = new String(byteBuffer.array(), 0, length,StandardCharsets.UTF_8);
-                System.out.println(tmp);
-                byteBuffer.clear();
+        byte[] methodBytes = IoUtil.readBytes(socketChannel, 7);
+        String method = new String(methodBytes, StandardCharsets.UTF_8);
+        StringBuilder sb = new StringBuilder();
+        if (method.matches("(GET|POST|DELETE|PUT|HEAD|OPTIONS).{0,4}")) {
+            int step = 0;
+            do {
+                byte[] bytes = IoUtil.readBytes(socketChannel, 32);
+                step = bytes.length;
+                String header = new String(bytes, StandardCharsets.UTF_8);
 
-                //判断结束，get请求，末尾是两个换行
-                if (tmp.contains("\r\n\r\n")) {
-                    readEnd = true;
-                    break;
-                }
-                if()
-            }
+
+            } while (step > 0);
+
         }
+
+
+//        ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
+//
+//        int length = 0;
+//        boolean readEnd = false;
+//        while (!readEnd) {
+//            while ((length = socketChannel.read(byteBuffer)) > 0) {
+//                byteBuffer.flip();
+//                String tmp = new String(byteBuffer.array(), 0, length, StandardCharsets.UTF_8);
+//                byteBuffer.clear();
+//
+//                //判断结束，get请求，末尾是两个换行
+//                if (tmp.contains("\r\n\r\n")) {
+//                    readEnd = true;
+//                    break;
+//                }
+//                //header ;?/
+//                int indexOf = tmp.indexOf("\r\n");
+//                if (indexOf != -1) {
+//                    log.info("{}",indexOf);
+//                    System.out.println(tmp);
+//                }else {
+//                    System.out.println(tmp);
+//                }
+//            }
+//        }
     }
-
-
 
 
     @Override
