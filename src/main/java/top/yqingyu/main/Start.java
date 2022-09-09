@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import top.yqingyu.common.nio$server.CreateServer;
 import top.yqingyu.common.qymsg.MsgTransfer;
 import top.yqingyu.common.utils.ThreadUtil;
-import top.yqingyu.event$handler.HttpEventHandler;
 import top.yqingyu.event$handler.MainEventHandler;
 import top.yqingyu.event$handler.S$CtEventHandler;
 import top.yqingyu.thread.ClientMonitorThread;
@@ -40,28 +39,20 @@ public class Start {
                 ThreadUtil.createQyFixedThreadPool(Runtime.getRuntime().availableProcessors() * 3, "transPool", null)
         );
 
-//        log.info("starting main server");
-//        CreateServer
-//                .createDefault(PORT_MAIN, "Main")
-//                .implEvent(MainEventHandler.class)
-//                .defaultFixRouter(16)
-//                .listenPort()
-//                .start();
-//
-//        log.info("starting s$ct server");
-//        CreateServer
-//                .createDefault("S$Ct")
-//                .implEvent(S$CtEventHandler.class)
-//                .defaultFixRouter(8,4)
-//                .listenPort(PORT_INTER)
-//                .start();
-
-
+        log.info("starting main server");
         CreateServer
-                .createDefault(8080,"http")
-                .implEvent(HttpEventHandler.class)
-                .defaultFixRouter(8,4)
+                .createDefault(PORT_MAIN, "Main")
+                .implEvent(MainEventHandler.class)
+                .defaultFixRouter(16)
                 .listenPort()
+                .start();
+
+        log.info("starting s$ct server");
+        CreateServer
+                .createDefault("S$Ct")
+                .implEvent(S$CtEventHandler.class)
+                .defaultFixRouter(8,4)
+                .listenPort(PORT_INTER)
                 .start();
 
 
