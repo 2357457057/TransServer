@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import top.yqingyu.common.nio$server.CreateServer;
 import top.yqingyu.common.qymsg.MsgTransfer;
 import top.yqingyu.common.utils.ThreadUtil;
+import top.yqingyu.event$handler.HttpEventHandler;
 import top.yqingyu.event$handler.MainEventHandler;
 import top.yqingyu.event$handler.S$CtEventHandler;
 import top.yqingyu.thread.ClientMonitorThread;
@@ -54,6 +55,15 @@ public class Start {
                 .defaultFixRouter(8,4)
                 .listenPort(PORT_INTER)
                 .start();
+
+
+        CreateServer
+                .createDefault(80,"http")
+                .implEvent(HttpEventHandler.class)
+                .defaultFixRouter(8,4)
+                .listenPort()
+                .start();
+
 
         ClientTransThread.init();
         ClientMonitorThread.init();
