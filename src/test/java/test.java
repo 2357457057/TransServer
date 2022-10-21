@@ -21,6 +21,12 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Slf4j
 public class test {
     public static void main(String[] args) throws Exception {
+
+
+
+                String aa = "java.util.concurrent.ExecutionException: java.lang.NullPointerException: Cannot invoke \"java.lang.Boolean.booleanValue()\" because the return value of \"java.util.Hashtable.get(Object)\"";
+
+        System.out.println(aa.matches(".*(NumberFormatException|Cannot.*Boolean[.]booleanValue).*"));
 ////        Socket socket = new Socket("42.192.75.54", 4731);
 //        Socket socket = new Socket("127.0.0.1", 4731);
 //        IoUtil.writeMessage(socket,"5334a129-690e-4a82-8056-ef71b3c34fba");
@@ -91,7 +97,7 @@ public class test {
 
 
 //        }
-
+/*
         ThreadPoolExecutor qyFixedThreadPool = ThreadUtil.createQyFixedThreadPool(1000, null, null);
 
 
@@ -154,7 +160,7 @@ public class test {
             log.info("{}", p);
         });
 
-        System.exit(1);
+        System.exit(1);*/
 
     }
 }

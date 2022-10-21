@@ -1,7 +1,7 @@
 package top.yqingyu.event$handler;
 
 import lombok.extern.slf4j.Slf4j;
-import top.yqingyu.common.nio$server.event.EventHandler;
+import top.yqingyu.common.nio$server.core.EventHandler;
 import top.yqingyu.common.qymsg.MsgTransfer;
 import top.yqingyu.common.qymsg.QyMsg;
 import top.yqingyu.common.utils.ThreadUtil;
@@ -11,7 +11,6 @@ import top.yqingyu.thread.RecordIpThread;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.*;
@@ -19,6 +18,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static top.yqingyu.main.MainConfig.CI_PartitionMsgQueue;
 import static top.yqingyu.main.MainConfig.CLIENT_RESPONSE_TIMEOUT;
+import static top.yqingyu.thread.ClientTransThread.POOL;
 
 /**
  * @author YYJ
@@ -30,12 +30,17 @@ import static top.yqingyu.main.MainConfig.CLIENT_RESPONSE_TIMEOUT;
 @Slf4j
 public class S$CtEventHandler extends EventHandler {
 
-    public S$CtEventHandler(Selector selector, ThreadPoolExecutor pool) {
-        super(selector, pool);
+    public S$CtEventHandler(Selector selector) throws IOException {
+        super(selector);
     }
 
     @Override
-    public void read(Selector selector, SelectionKey selectionKey) throws IOException {
+    protected void loading() {
+
+    }
+
+    @Override
+    public void read(Selector selector, SocketChannel channel) throws IOException {
 
         AtomicReference<SocketChannel> socketChannel = new AtomicReference<>();
         AtomicReference<String> ip = new AtomicReference<>();
@@ -45,7 +50,7 @@ public class S$CtEventHandler extends EventHandler {
             FutureTask<String> futureTask = new FutureTask<>(() -> {
                 ThreadUtil.setThisThreadName(name);
 
-                socketChannel.set((SocketChannel) selectionKey.channel());
+                socketChannel.set(channel);
                 InetSocketAddress socketAddress = (InetSocketAddress) socketChannel.get().getRemoteAddress();
                 ip.set(socketAddress.getHostString());
 
@@ -60,7 +65,7 @@ public class S$CtEventHandler extends EventHandler {
                 }
                 return "";
             });
-            POOL.execute(futureTask);
+            READ_POOL.execute(futureTask);
             futureTask.get(CLIENT_RESPONSE_TIMEOUT, TimeUnit.MILLISECONDS);
 
         } catch (TimeoutException e) {
@@ -89,7 +94,12 @@ public class S$CtEventHandler extends EventHandler {
     }
 
     @Override
-    public void write(Selector selector, SelectionKey selectionKey) throws IOException {
+    public void write(Selector selector, SocketChannel selectionKey) throws IOException {
         System.out.println("write");
+    }
+
+    @Override
+    public void assess(Selector selector, SocketChannel socketChannel) throws Exception {
+
     }
 }

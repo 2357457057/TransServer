@@ -33,10 +33,9 @@ public class RegistryCenter {
     private static final Logger logger = LoggerFactory.getLogger(RegistryCenter.class);
 
 
-    public static boolean registrationClient(SelectionKey selectionKey, Selector selector, QyMsg msgHeader) throws CloneNotSupportedException {
+    public static boolean registrationClient(SocketChannel socketChannel, Selector selector, QyMsg msgHeader) throws CloneNotSupportedException {
         QyMsg clone = MainConfig.NORM_MSG.clone();
         try {
-            SocketChannel socketChannel = (SocketChannel) selectionKey.channel();
 
 
             InetSocketAddress socketAddress = (InetSocketAddress) socketChannel.getRemoteAddress();

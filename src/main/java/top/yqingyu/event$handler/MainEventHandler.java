@@ -2,7 +2,7 @@ package top.yqingyu.event$handler;
 
 import cn.hutool.core.date.LocalDateTimeUtil;
 import lombok.extern.slf4j.Slf4j;
-import top.yqingyu.common.nio$server.event.EventHandler;
+import top.yqingyu.common.nio$server.core.EventHandler;
 import top.yqingyu.common.qymsg.MsgHelper;
 import top.yqingyu.common.qymsg.MsgTransfer;
 import top.yqingyu.common.qymsg.MsgType;
@@ -25,6 +25,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static top.yqingyu.main.MainConfig.*;
+import static top.yqingyu.thread.ClientTransThread.POOL;
 
 /**
  * @author YYJ
@@ -36,12 +37,17 @@ import static top.yqingyu.main.MainConfig.*;
 @Slf4j
 public class MainEventHandler extends EventHandler {
 
-    public MainEventHandler(Selector selector, ThreadPoolExecutor pool) {
-        super(selector, pool);
+    public MainEventHandler(Selector selector) throws IOException {
+       super(selector);
     }
 
     @Override
-    public void read(Selector selector, SelectionKey selectionKey) throws IOException {
+    protected void loading() {
+
+    }
+
+    @Override
+    public void read(Selector selector, SocketChannel socketChannel) throws IOException {
         AtomicReference<SocketChannel> socketChannel_C = new AtomicReference<>();
         AtomicReference<String> ip = new AtomicReference<>();
 
@@ -51,7 +57,6 @@ public class MainEventHandler extends EventHandler {
             FutureTask<String> futureTask = new FutureTask<>(() -> {
                 ThreadUtil.setThisThreadName(name);
                 LocalDateTime now1 = LocalDateTime.now();
-                SocketChannel socketChannel = (SocketChannel) selectionKey.channel();
                 socketChannel_C.set(socketChannel);
 
                 InetSocketAddress socketAddress = (InetSocketAddress) socketChannel.getRemoteAddress();
@@ -85,7 +90,7 @@ public class MainEventHandler extends EventHandler {
                 } else {
                     if (MsgType.AC == type && MainConfig.AC_STR.equals(MsgHelper.gainMsgValue(thisMsg, "AC_STR"))) {
 
-                        if (RegistryCenter.registrationClient(selectionKey, selector, thisMsg)) {
+                        if (RegistryCenter.registrationClient(socketChannel, selector, thisMsg)) {
                             socketChannel.register(selector, SelectionKey.OP_WRITE);
 
                             clone = AC_MSG.clone();
@@ -137,9 +142,13 @@ public class MainEventHandler extends EventHandler {
         }
     }
 
+    @Override
+    public void write(Selector selector, SocketChannel socketChannel) throws Exception {
+
+    }
 
     @Override
-    public void write(Selector selector, SelectionKey selectionKey) throws IOException {
+    public void assess(Selector selector, SocketChannel socketChannel) throws Exception {
 
     }
 }
