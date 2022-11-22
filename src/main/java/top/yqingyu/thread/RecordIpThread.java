@@ -7,7 +7,7 @@ import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import top.yqingyu.common.qydata.DataMap;
-import top.yqingyu.common.utils.HttpUtils;
+import top.yqingyu.common.utils.HttpUtil;
 import top.yqingyu.common.utils.ThreadUtil;
 
 import java.util.HashMap;
@@ -52,9 +52,9 @@ public class RecordIpThread implements Runnable {
 
         DataMap dataMap = new DataMap();
         dataMap.put("ip",ip);
-        CloseableHttpResponse post = (CloseableHttpResponse)HttpUtils.doPost(SERVER_CONF.getData("IP_REC").getString("host"), "/web/viewnum", "POST", header, new HashMap<>(), dataMap.toString());
+        CloseableHttpResponse post = (CloseableHttpResponse)HttpUtil.doPost(SERVER_CONF.getData("IP_REC").getString("host"), "/web/viewnum", "POST", header, new HashMap<>(), dataMap.toString());
 
-//        HttpResponse post = HttpUtils.doPost("http://localhost:4728", "/web/viewnum", "POST", header, new HashMap<>(), "{\"ip\" : \"" + ip + "\"}");
+//        HttpResponse post = HttpUtil.doPost("http://localhost:4728", "/web/viewnum", "POST", header, new HashMap<>(), "{\"ip\" : \"" + ip + "\"}");
         HttpEntity entity = post.getEntity();
 
 
