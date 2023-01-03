@@ -19,7 +19,7 @@
         <dependency>
             <groupId>top.yqingyu</groupId>
             <artifactId>commons-qy</artifactId>
-            <version>1.8.0-alpha2</version>
+            <version>1.8.5</version>
         </dependency>
 
         <dependency>

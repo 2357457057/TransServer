@@ -24,7 +24,7 @@
             <pattern>${log.color}</pattern>
         </layout>
         <filter class="ThresholdFilter">
-            <level>INFO</level>
+            <level>DEBUG</level>
         </filter>
     </appender>
 
