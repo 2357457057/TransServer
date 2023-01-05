@@ -28,7 +28,7 @@ public class QueueCommand implements Command {
     public void commandDeal(SocketChannel socketChannel, Selector selector, QyMsg msg) throws Exception {
         socketChannel.register(selector, SelectionKey.OP_WRITE);
         String s = MsgHelper.gainMsg(msg);
-        String replace = s.replace("getMsg", "");
+        String replace = s.replaceAll("getMsg| ", "");
         int i = Integer.parseInt(replace);
         QyMsg clone = MainConfig.NORM_MSG.clone();
         clone.putMsg("1234567890".repeat(1024).repeat(i));
