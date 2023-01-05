@@ -2,6 +2,7 @@ package top.yqingyu.command.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import top.yqingyu.command.Command;
+import top.yqingyu.common.qymsg.MsgHelper;
 import top.yqingyu.common.qymsg.MsgTransfer;
 import top.yqingyu.common.qymsg.QyMsg;
 import top.yqingyu.main.MainConfig;
@@ -21,12 +22,16 @@ import java.nio.channels.SocketChannel;
 @Slf4j
 public class QueueCommand implements Command {
 
-    private static final String commandRegx = "getMsg";
+    private static final String commandRegx = "getMsg[ \\d]*";
+
     @Override
     public void commandDeal(SocketChannel socketChannel, Selector selector, QyMsg msg) throws Exception {
         socketChannel.register(selector, SelectionKey.OP_WRITE);
+        String s = MsgHelper.gainMsg(msg);
+        String replace = s.replace("getMsg", "");
+        int i = Integer.parseInt(replace);
         QyMsg clone = MainConfig.NORM_MSG.clone();
-        clone.putMsg("12345678901234567890".repeat(10240));
+        clone.putMsg("1234567890".repeat(1024).repeat(i));
         MsgTransfer.writeQyMsg(socketChannel, clone);
         socketChannel.register(selector, SelectionKey.OP_READ);
     }
