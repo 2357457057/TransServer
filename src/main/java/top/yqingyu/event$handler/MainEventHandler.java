@@ -45,7 +45,13 @@ public class MainEventHandler extends EventHandler {
     protected void loading() {
 
     }
-
+    /**
+     *  TODO 待优化！ 长消息需更多时间
+     *
+     * @param selector
+     * @param socketChannel
+     * @throws IOException
+     */
     @Override
     public void read(Selector selector, SocketChannel socketChannel) throws IOException {
         AtomicReference<SocketChannel> socketChannel_C = new AtomicReference<>();

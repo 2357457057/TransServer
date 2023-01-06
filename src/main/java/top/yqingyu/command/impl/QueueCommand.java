@@ -2,6 +2,7 @@ package top.yqingyu.command.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import top.yqingyu.command.Command;
+import top.yqingyu.common.qymsg.DataType;
 import top.yqingyu.common.qymsg.MsgHelper;
 import top.yqingyu.common.qymsg.MsgTransfer;
 import top.yqingyu.common.qymsg.QyMsg;
@@ -31,6 +32,7 @@ public class QueueCommand implements Command {
         String replace = s.replaceAll("getMsg| ", "");
         int i = Integer.parseInt(replace);
         QyMsg clone = MainConfig.NORM_MSG.clone();
+        clone.setDataType(DataType.OBJECT);
         clone.putMsg("1234567890".repeat(1024).repeat(i));
         MsgTransfer.writeQyMsg(socketChannel, clone);
         socketChannel.register(selector, SelectionKey.OP_READ);
