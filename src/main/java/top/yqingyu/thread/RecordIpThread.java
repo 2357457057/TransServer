@@ -1,11 +1,9 @@
 package top.yqingyu.thread;
 
+import com.alibaba.fastjson2.JSONObject;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
-import org.apache.hc.core5.http.HttpEntity;
-import org.apache.hc.core5.http.io.entity.EntityUtils;
 import top.yqingyu.common.qydata.DataMap;
 import top.yqingyu.common.utils.HttpUtil;
 import top.yqingyu.common.utils.ThreadUtil;
@@ -26,7 +24,7 @@ import static top.yqingyu.main.MainConfig.SERVER_CONF;
 public class RecordIpThread implements Runnable {
 
 
-    private static final ExecutorService IP_RECORD_THREAD_POOL = ThreadUtil.createQyFixedThreadPool(SERVER_CONF.getData("IP_REC").getIntValue("pool_size"),"IpRec",null);
+    private static final ExecutorService IP_RECORD_THREAD_POOL = ThreadUtil.createQyFixedThreadPool(SERVER_CONF.getData("IP_REC").getIntValue("pool_size"), "IpRec", null);
     private String ip;
 
     public RecordIpThread() {
@@ -36,9 +34,9 @@ public class RecordIpThread implements Runnable {
         this.ip = ip;
     }
 
-    public static void execute(String ip){
-        if(StringUtils.isNotBlank(ip))
-        IP_RECORD_THREAD_POOL.execute(new RecordIpThread(ip));
+    public static void execute(String ip) {
+        if (StringUtils.isNotBlank(ip))
+            IP_RECORD_THREAD_POOL.execute(new RecordIpThread(ip));
     }
 
     @SneakyThrows
@@ -47,18 +45,17 @@ public class RecordIpThread implements Runnable {
 
         HashMap<String, String> header = new HashMap<>();
 
-        header.put("token",SERVER_CONF.getData("IP_REC").getString("token"));
+        header.put("token", SERVER_CONF.getData("IP_REC").getString("token"));
         header.put("content-type", "application/json");
 
         DataMap dataMap = new DataMap();
-        dataMap.put("ip",ip);
-        CloseableHttpResponse post = (CloseableHttpResponse)HttpUtil.doPost(SERVER_CONF.getData("IP_REC").getString("host"), "/web/viewnum", "POST", header, new HashMap<>(), dataMap.toString());
+        dataMap.put("ip", ip);
+        JSONObject post = HttpUtil.doPost(SERVER_CONF.getData("IP_REC").getString("host") + "/web/viewnum", header, null, dataMap);
 
 //        HttpResponse post = HttpUtil.doPost("http://localhost:4728", "/web/viewnum", "POST", header, new HashMap<>(), "{\"ip\" : \"" + ip + "\"}");
-        HttpEntity entity = post.getEntity();
 
 
-        log.info("非法消息入库成功{}", EntityUtils.toString(entity));
+        log.info("非法消息入库成功{}", post.toJSONString());
 
 
     }
