@@ -90,8 +90,8 @@ public class MainEventHandler extends EventHandler {
 
                         new DealMsgThread(socketChannel, selector).deal(thisMsg);
                         LocalDateTime now2 = LocalDateTime.now();
-                        long nanos = LocalDateTimeUtil.between(now1, now2, ChronoUnit.MICROS);
-                        log.info("命令执行完成：{}  | {}ns", thisMsg.toString(), nanos);
+                        long nanos = LocalDateTimeUtil.between(now1, now2, ChronoUnit.MILLIS);
+                        log.info("命令执行完成：{}  | {}ms", MsgHelper.gainMsg(thisMsg), nanos);
                     }
                 } else {
                     if (MsgType.AC == type && MainConfig.AC_STR.equals(MsgHelper.gainMsgValue(thisMsg, "AC_STR"))) {

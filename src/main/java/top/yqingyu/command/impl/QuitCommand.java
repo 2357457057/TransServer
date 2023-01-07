@@ -10,55 +10,38 @@ import top.yqingyu.main.MainConfig;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
 
 /**
  * @author YYJ
  * @version 1.0.0
  * @date 2022/4/24 6:31
- * @description  退出
+ * @description 退出
  * @modified by
  */
-public class QuitCommand implements Command {
+public class QuitCommand extends Command {
 
 
     private static final String commandRegx = "(quit|exit).*";
 
+    public QuitCommand() {
+        super(commandRegx);
+    }
 
-    /**
-     * socketChannel.register(selector, SelectionKey.OP_WRITE);
-     * <p>
-     * socketChannel.register(selector, SelectionKey.OP_READ);
-     * description: 命令处理方法
-     *
-     * @param socketChannel
-     * @param selector
-     * @param msgHeader
-     * @author yqingyu
-     * DATE 2022/4/24
-     */
     @Override
-    public void commandDeal(SocketChannel socketChannel, Selector selector,  QyMsg msgHeader) throws Exception {
+    protected  void deal(SocketChannel socketChannel, Selector selector, QyMsg msg, ArrayList<QyMsg> rtnMsg) throws Exception {
 
-        socketChannel.register(selector, SelectionKey.OP_WRITE);
         StringBuilder sb = new StringBuilder();
-
-        if (MsgHelper.gainMsg(msgHeader).matches(commandRegx)) {
-
             sb.append("bye bye!");
             sb.append("\n");
             sb.append("$>");
             sb.append("command_ok");
             sb.append("\n");
             sb.append("$>");
-
             QyMsg clone = MainConfig.NORM_MSG.clone();
             clone.putMsg(sb.toString());
-            MsgTransfer.writeQyMsg(socketChannel,clone);
-            socketChannel.register(selector, SelectionKey.OP_READ);
-
-
-            RegistryCenter.removeClient(msgHeader.getFrom());
-        }
+            RegistryCenter.removeClient(msg.getFrom());
+            rtnMsg.add(clone);
 
     }
 }

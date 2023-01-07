@@ -14,6 +14,7 @@ import top.yqingyu.main.MainConfig;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
@@ -27,29 +28,20 @@ import java.util.concurrent.TimeoutException;
  * @createTime 2022年05月08日 14:32:00
  */
 @Slf4j
-public class LinkCommand implements Command {
+public class LinkCommand extends Command {
 
     private static final String commandRegx = "^(link)(( )((-)([lhseip]{1,5}|show|help|link)(( )([\\u4e00-\\u9fa5\\w/.\\\\_-]{0,200}))?)|([\\u4e00-\\u9fa5\\w/.\\\\_]{0,200}))?$";
 
-    /**
-     * socketChannel.register(selector, SelectionKey.OP_WRITE);
-     * <p>
-     * socketChannel.register(selector, SelectionKey.OP_READ);
-     * description: 命令处理方法
-     *
-     * @param socketChannel
-     * @param selector
-     * @param msgHeader
-     * @author yqingyu
-     * DATE 2022/05/08
-     */
+    public LinkCommand() {
+        super(commandRegx);
+    }
+
     @Override
-    public void commandDeal(SocketChannel socketChannel, Selector selector,  QyMsg msgHeader) throws Exception {
-        socketChannel.register(selector, SelectionKey.OP_WRITE);
+    protected void deal(SocketChannel socketChannel, Selector selector, QyMsg msg, ArrayList<QyMsg> rtnMsg) throws Exception {
         StringBuilder sb = new StringBuilder();
 
-        if (MsgHelper.gainMsg(msgHeader).matches(commandRegx)) {
-            String[] msgSplit = MsgHelper.gainMsg(msgHeader).split(" ");
+        if (MsgHelper.gainMsg(msg).matches(commandRegx)) {
+            String[] msgSplit = MsgHelper.gainMsg(msg).split(" ");
 
             if (msgSplit.length == 2) {
                 if (msgSplit[1].contains("-")) {
@@ -58,7 +50,7 @@ public class LinkCommand implements Command {
                         sb.append(RegistryCenter.REGISTRY_CENTER.size());
                         sb.append("\n");
                         sb.append("本机id：");
-                        sb.append(msgHeader.getFrom());
+                        sb.append(msg.getFrom());
                         sb.append("\n");
                         sb.append("$> id                                   外网ip\t\t本网ip\t\t心跳时间\n");
                         RegistryCenter.REGISTRY_CENTER.forEach((id, clientInfo) -> {
@@ -91,11 +83,11 @@ public class LinkCommand implements Command {
                         ClientInfo remoteClient = RegistryCenter.getClientInfo(msgSplit[2].trim());
                         if (remoteClient != null) {
                             DataMap data = new DataMap();
-                            data.put("MSG_IN","link");
-                            data.put("link_id",msgHeader.getFrom());
+                            data.put("MSG_IN", "link");
+                            data.put("link_id", msg.getFrom());
                             remoteClient.getClientInteractionQueue().add(data);
 
-                            ClientInfo localClient = RegistryCenter.getClientInfo(msgHeader.getFrom());
+                            ClientInfo localClient = RegistryCenter.getClientInfo(msg.getFrom());
                             ConcurrentLinkedQueue<DataMap> clientInteractionQueue = localClient.getClientInteractionQueue();
 
                             boolean[] run = {true};
@@ -104,7 +96,7 @@ public class LinkCommand implements Command {
                                 while (run[0]) {
                                     DataMap peek = clientInteractionQueue.peek();
                                     if (peek != null) {
-                                        if ("linked".equals(peek.getString("MSG_OUT",""))) {
+                                        if ("linked".equals(peek.getString("MSG_OUT", ""))) {
                                             clientInteractionQueue.remove();
                                             break;
                                         }
@@ -147,7 +139,6 @@ public class LinkCommand implements Command {
         sb.append("\n$>");
         QyMsg clone = MainConfig.NORM_MSG.clone();
         clone.putMsg(sb.toString());
-        MsgTransfer.writeQyMsg(socketChannel, clone);
-        socketChannel.register(selector, SelectionKey.OP_READ);
+        rtnMsg.add(clone);
     }
 }

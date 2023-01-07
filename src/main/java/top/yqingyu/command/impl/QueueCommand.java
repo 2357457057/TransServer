@@ -11,6 +11,7 @@ import top.yqingyu.main.MainConfig;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
 
 
 /**
@@ -21,20 +22,22 @@ import java.nio.channels.SocketChannel;
  * @createTime 2022年09月07日 10:36:00
  */
 @Slf4j
-public class QueueCommand implements Command {
+public class QueueCommand extends Command {
 
     private static final String commandRegx = "getMsg[ \\d]*";
 
+    public QueueCommand() {
+        super(commandRegx);
+    }
+
     @Override
-    public void commandDeal(SocketChannel socketChannel, Selector selector, QyMsg msg) throws Exception {
-        socketChannel.register(selector, SelectionKey.OP_WRITE);
+    protected void deal(SocketChannel socketChannel, Selector selector, QyMsg msg, ArrayList<QyMsg> rtnMsg) throws Exception {
         String s = MsgHelper.gainMsg(msg);
         String replace = s.replaceAll("getMsg| ", "");
         int i = Integer.parseInt(replace);
         QyMsg clone = MainConfig.NORM_MSG.clone();
         clone.setDataType(DataType.OBJECT);
         clone.putMsg("1234567890".repeat(1024).repeat(i));
-        MsgTransfer.writeQyMsg(socketChannel, clone);
-        socketChannel.register(selector, SelectionKey.OP_READ);
+        rtnMsg.add(clone);
     }
 }

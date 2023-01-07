@@ -10,6 +10,7 @@ import top.yqingyu.main.MainConfig;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 
@@ -20,32 +21,19 @@ import java.util.Iterator;
  * @description 注册信息
  * @modified by
  */
-public class RegCommand implements Command {
+public class RegCommand extends Command {
 
     private static final String commandRegx = "reg.*";
 
+    public RegCommand() {
+        super(commandRegx);
+    }
 
-    /**
-     * socketChannel.register(selector, SelectionKey.OP_WRITE);
-     * <p>
-     * socketChannel.register(selector, SelectionKey.OP_READ);
-     * description: 命令处理方法
-     *
-     * @param socketChannel
-     * @param selector
-     * @param msgHeader
-     * @author yqingyu
-     * DATE 2022/4/24
-     */
     @Override
-    public void commandDeal(SocketChannel socketChannel, Selector selector,  QyMsg msgHeader) throws Exception {
-
-        socketChannel.register(selector, SelectionKey.OP_WRITE);
-
-
+    protected void deal(SocketChannel socketChannel, Selector selector, QyMsg msg, ArrayList<QyMsg> rtnMsg) throws Exception {
         StringBuilder sb = new StringBuilder();
 
-        if (MsgHelper.gainMsg(msgHeader).matches(commandRegx)) {
+        if (MsgHelper.gainMsg(msg).matches(commandRegx)) {
             Enumeration<String> keys = RegistryCenter.REGISTRY_CENTER.keys();
             Iterator<String> iterator = keys.asIterator();
             while (iterator.hasNext()) {
@@ -61,7 +49,6 @@ public class RegCommand implements Command {
         sb.append("\n$>");
         QyMsg clone = MainConfig.NORM_MSG.clone();
         clone.putMsg(sb.toString());
-        MsgTransfer.writeQyMsg(socketChannel, clone);
-        socketChannel.register(selector, SelectionKey.OP_READ);
+        rtnMsg.add(clone);
     }
 }

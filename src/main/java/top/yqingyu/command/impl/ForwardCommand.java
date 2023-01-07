@@ -20,6 +20,7 @@ import java.net.Socket;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -35,7 +36,7 @@ import java.util.regex.Pattern;
  * @createTime 2022年07月19日 22:30:00
  */
 @Slf4j
-public class ForwardCommand implements Command {
+public class ForwardCommand extends Command {
     //65535
     private static final String commandRegx = "^(forward)" + "(" + "( ){1,5}" + "((" + "((-)(s|stream))" + "(( ){1,5})([\\w]{8}(-))((([\\w]{4})(-)){3})([\\w]{12})" +          //客户端id
             "(( ){1,5})((6[0-4][\\d]{3})|(65[0-4][\\d]{2})|(655[0-2][\\d])|(6553[0-5])|([1-5][\\d]{4})|([\\d]{0,4}))" +   //端口号
@@ -43,21 +44,25 @@ public class ForwardCommand implements Command {
             "|" + "(" + "(-)(stop|help|h)" +  //其他
             "))" + ")?" + "$";
 
+
+    public ForwardCommand() {
+        super(commandRegx);
+    }
+
     private static final ThreadPoolExecutor FORWARD_POOL = ThreadUtil.createQyFixedThreadPool(MainConfig.MAX_REGISTRY_NUM * 3, "Fwd", null);
 
     @Override
-    public void commandDeal(SocketChannel socketChannel, Selector selector, QyMsg msgHeader) throws Exception {
-        socketChannel.register(selector, SelectionKey.OP_WRITE);
+    protected void deal(SocketChannel socketChannel, Selector selector, QyMsg msg, ArrayList<QyMsg> rtnMsg) throws Exception {
         StringBuilder sb = new StringBuilder();
-        String[] msgSplit = MsgHelper.gainMsg(msgHeader).split(" ");
-        if (MsgHelper.gainMsg(msgHeader).matches(commandRegx)) {
+        String[] msgSplit = MsgHelper.gainMsg(msg).split(" ");
+        if (MsgHelper.gainMsg(msg).matches(commandRegx)) {
 
 
             if (msgSplit.length > 1 && msgSplit[1].matches("-(s|stream)")) {
 
 
                 Pattern clientPatten = Pattern.compile("([\\w]{8}(-))((([\\w]{4})(-)){3})([\\w]{12})");
-                Matcher clientMatcher = clientPatten.matcher(MsgHelper.gainMsg(msgHeader));
+                Matcher clientMatcher = clientPatten.matcher(MsgHelper.gainMsg(msg));
 
                 if (clientMatcher.find()) {
                     String remote_client_id = clientMatcher.group();
@@ -69,10 +74,10 @@ public class ForwardCommand implements Command {
                     ClientInfo remote_client = RegistryCenter.getClientInfo(remote_client_id);
                     DataMap dataMap = new DataMap();
                     dataMap.put("MSG_IN", "forward");
-                    dataMap.put("client", msgHeader.getFrom());
+                    dataMap.put("client", msg.getFrom());
                     dataMap.put("port", remote_port);
                     remote_client.getClientInteractionQueue().add(dataMap);
-                    forwardSocket(msgHeader.getFrom(), remote_client_id);
+                    forwardSocket(msg.getFrom(), remote_client_id);
                 } else {
                     sb.append("格式异常");
                 }
@@ -107,8 +112,7 @@ public class ForwardCommand implements Command {
         sb.append("\n$>");
         QyMsg clone = MainConfig.NORM_MSG.clone();
         clone.putMsg(sb.toString());
-        MsgTransfer.writeQyMsg(socketChannel, clone);
-        socketChannel.register(selector, SelectionKey.OP_READ);
+        rtnMsg.add(clone);
     }
 
 

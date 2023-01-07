@@ -2,6 +2,8 @@ package top.yqingyu.thread;
 
 import lombok.extern.slf4j.Slf4j;
 import top.yqingyu.bean.ClientInfo;
+import top.yqingyu.command.Command;
+import top.yqingyu.common.qydata.ConcurrentDataSet;
 import top.yqingyu.common.qydata.DataMap;
 import top.yqingyu.common.qymsg.MsgHelper;
 import top.yqingyu.common.qymsg.MsgTransfer;
@@ -12,12 +14,13 @@ import top.yqingyu.component.RegistryCenter;
 import top.yqingyu.main.S$CtConfig;
 import top.yqingyu.main.MainConfig;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -26,40 +29,40 @@ import java.util.concurrent.atomic.AtomicReference;
 public record DealMsgThread(SocketChannel socketChannel, Selector selector) {
 
 
-    private static final HashMap<String, Class> Reg_Classs = new HashMap();
+    private static final ArrayList<Command> COMMANDS = new ArrayList<>();
 
 
+    static {
+        try {
+            List<Class<?>> classList = ClazzUtil.getClassList("top.yqingyu.command.impl", false);
+            for (Class<?> clazz : classList) {
+                Constructor<Command> constructor = (Constructor<Command>) clazz.getConstructor();
+                Command command = constructor.newInstance();
+                COMMANDS.add(command);
+            }
+            Command command = new Command();
+            COMMANDS.add(command);
+        } catch (Exception e) {
+            log.error("{}", e);
+        }
+    }
 
 
-    public void deal(QyMsg msgHeader) throws Exception {
+    public void deal(QyMsg qyMsg) throws Exception {
 
-        log.info("DEAL> {}", msgHeader.toString());
-        AtomicReference<Class> a = new AtomicReference<>();
+        log.info("DEAL> {}", qyMsg.toString());
+        AtomicReference<Command> a = new AtomicReference<>();
 
         QyMsg clone;
 
         try {
-
-            if (Reg_Classs.size() == 0) {
-                try {
-                    List<Class<?>> classList = ClazzUtil.getClassList("top.yqingyu.command.impl", false);
-
-                    for (Class<?> clazz : classList) {
-                        Field field = clazz.getDeclaredField("commandRegx");
-                        field.setAccessible(true);
-                        String o = (String) field.get((Object) null);
-                        Reg_Classs.put(o, clazz);
-                    }
-                } catch (IllegalAccessException | NoSuchFieldException e) {
-                    log.error("{}", e);
+            for (int i = 0; i < COMMANDS.size(); i++) {
+                Command command = COMMANDS.get(i);
+                if (command.isMatch(MsgHelper.gainMsg(qyMsg))) {
+                    a.set(command);
+                    break;
                 }
             }
-
-            Reg_Classs.forEach((regx, clazzx) -> {
-                if (MsgHelper.gainMsg(msgHeader).matches(regx)) {
-                    a.set(clazzx);
-                }
-            });
         } catch (Exception e) {
             log.error("命令处理异常", e);
             throw e;
@@ -67,11 +70,9 @@ public record DealMsgThread(SocketChannel socketChannel, Selector selector) {
 
         if (a.get() != null) {
             try {
-                Class clazz = (Class) a.get();
-                Object o = clazz.getDeclaredConstructor().newInstance();
-                Method commandDeal = clazz.getMethod("commandDeal", SocketChannel.class, Selector.class, QyMsg.class);
-                commandDeal.invoke(o, this.socketChannel, this.selector, msgHeader);
-                log.info("调用类: {}", clazz.getName());
+                Command command = a.get();
+                command.dealCommand(this.socketChannel, this.selector, qyMsg);
+                log.info("执行类: {}", command.getClass().getSimpleName());
             } catch (Exception e) {
                 this.socketChannel.register(this.selector, SelectionKey.OP_WRITE);
 
