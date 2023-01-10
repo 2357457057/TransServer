@@ -1,4 +1,4 @@
-package top.yqingyu.main;
+package top.yqingyu.trans$server.main;
 
 import lombok.extern.slf4j.Slf4j;
 import top.yqingyu.common.qydata.DataMap;

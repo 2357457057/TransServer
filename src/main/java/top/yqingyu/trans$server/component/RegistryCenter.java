@@ -1,13 +1,13 @@
-package top.yqingyu.component;
+package top.yqingyu.trans$server.component;
 
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import top.yqingyu.bean.ClientInfo;
+import top.yqingyu.trans$server.bean.ClientInfo;
 import top.yqingyu.common.qymsg.MsgHelper;
 import top.yqingyu.common.qymsg.MsgTransfer;
 import top.yqingyu.common.qymsg.QyMsg;
-import top.yqingyu.main.MainConfig;
+import top.yqingyu.trans$server.main.MainConfig;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -16,9 +16,6 @@ import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.time.LocalDateTime;
 import java.util.concurrent.ConcurrentHashMap;
-
-import static top.yqingyu.main.MainConfig.ERR_MSG;
-import static top.yqingyu.main.MainConfig.MAX_REGISTRY_NUM;
 
 /**
  * @author YYJ
@@ -41,7 +38,7 @@ public class RegistryCenter {
             InetSocketAddress socketAddress = (InetSocketAddress) socketChannel.getRemoteAddress();
 
 
-            if (REGISTRY_CENTER.size() < MAX_REGISTRY_NUM) {
+            if (REGISTRY_CENTER.size() < MainConfig.MAX_REGISTRY_NUM) {
                 String LAN_Address = MsgHelper.gainMsgValue(msgHeader, "LAN_Address");
 
                 ClientInfo clientInfo = new ClientInfo();
@@ -57,7 +54,7 @@ public class RegistryCenter {
             } else {
                 socketChannel.register(selector, SelectionKey.OP_WRITE);
 
-                clone = ERR_MSG.clone();
+                clone = MainConfig.ERR_MSG.clone();
                 clone.putMsg("客户端连接数已达最大值，将会关闭本次链接，请稍后再试！");
                 MsgTransfer.writeQyMsg(socketChannel, clone);
                 socketChannel.close();

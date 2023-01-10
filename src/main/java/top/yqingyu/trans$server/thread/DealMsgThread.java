@@ -1,22 +1,19 @@
-package top.yqingyu.thread;
+package top.yqingyu.trans$server.thread;
 
 import lombok.extern.slf4j.Slf4j;
-import top.yqingyu.bean.ClientInfo;
-import top.yqingyu.command.Command;
-import top.yqingyu.common.qydata.ConcurrentDataSet;
+import top.yqingyu.trans$server.bean.ClientInfo;
+import top.yqingyu.trans$server.command.Command;
 import top.yqingyu.common.qydata.DataMap;
 import top.yqingyu.common.qymsg.MsgHelper;
 import top.yqingyu.common.qymsg.MsgTransfer;
 import top.yqingyu.common.qymsg.MsgType;
 import top.yqingyu.common.qymsg.QyMsg;
 import top.yqingyu.common.utils.ClazzUtil;
-import top.yqingyu.component.RegistryCenter;
-import top.yqingyu.main.S$CtConfig;
-import top.yqingyu.main.MainConfig;
+import top.yqingyu.trans$server.component.RegistryCenter;
+import top.yqingyu.trans$server.main.S$CtConfig;
+import top.yqingyu.trans$server.main.MainConfig;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
@@ -34,7 +31,7 @@ public record DealMsgThread(SocketChannel socketChannel, Selector selector) {
 
     static {
         try {
-            List<Class<?>> classList = ClazzUtil.getClassList("top.yqingyu.command.impl", false);
+            List<Class<?>> classList = ClazzUtil.getClassList("top.yqingyu.trans$server.command.impl", false);
             for (Class<?> clazz : classList) {
                 Constructor<Command> constructor = (Constructor<Command>) clazz.getConstructor();
                 Command command = constructor.newInstance();

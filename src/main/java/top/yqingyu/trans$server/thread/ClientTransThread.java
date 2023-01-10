@@ -1,4 +1,4 @@
-package top.yqingyu.thread;
+package top.yqingyu.trans$server.thread;
 
 
 import lombok.SneakyThrows;
@@ -6,15 +6,13 @@ import lombok.extern.slf4j.Slf4j;
 import top.yqingyu.common.qymsg.MsgTransfer;
 import top.yqingyu.common.qymsg.QyMsg;
 import top.yqingyu.common.utils.ThreadUtil;
-import top.yqingyu.component.RegistryCenter;
-import top.yqingyu.main.MainConfig;
+import top.yqingyu.trans$server.component.RegistryCenter;
+import top.yqingyu.trans$server.main.MainConfig;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.*;
-
-import static top.yqingyu.main.MainConfig.*;
 
 /**
  * @author YYJ
@@ -27,7 +25,7 @@ import static top.yqingyu.main.MainConfig.*;
 @Slf4j
 public record ClientTransThread(Socket socket) implements Runnable, Callable<Boolean> {
 
-    public static final ThreadPoolExecutor POOL = ThreadUtil.createQyFixedThreadPool(MAX_REGISTRY_NUM * 2, "Csc", null);
+    public static final ThreadPoolExecutor POOL = ThreadUtil.createQyFixedThreadPool(MainConfig.MAX_REGISTRY_NUM * 2, "Csc", null);
     public static final ConcurrentHashMap<String, Socket> CLIENT_TRANS_POOL = new ConcurrentHashMap<>();
 
 
@@ -36,7 +34,7 @@ public record ClientTransThread(Socket socket) implements Runnable, Callable<Boo
         POOL.execute(() -> {
             ServerSocket serverSocket = null;
             try {
-                serverSocket = new ServerSocket(PORT_COMM);
+                serverSocket = new ServerSocket(MainConfig.PORT_COMM);
                 while (true) {
                     Socket socket = serverSocket.accept();
                     POOL.execute(new ClientTransThread(socket));
@@ -54,13 +52,13 @@ public record ClientTransThread(Socket socket) implements Runnable, Callable<Boo
     public void run() {
         FutureTask<Boolean> futureTask = new FutureTask<>(new ClientTransThread(this.socket));
         POOL.execute(futureTask);
-        Boolean connected = futureTask.get(CLIENT_RESPONSE_TIMEOUT, TimeUnit.MILLISECONDS);
+        Boolean connected = futureTask.get(MainConfig.CLIENT_RESPONSE_TIMEOUT, TimeUnit.MILLISECONDS);
 
         if (connected) {
             QyMsg QyMsg = MsgTransfer.readMsg(this.socket, MainConfig.MSG_TIMEOUT);;
             log.info(QyMsg.toString());
 
-            QyMsg header = NORM_MSG.clone();
+            QyMsg header = MainConfig.NORM_MSG.clone();
             header.putMsg("ok");
 
             MsgTransfer.writeMessage(socket,header);

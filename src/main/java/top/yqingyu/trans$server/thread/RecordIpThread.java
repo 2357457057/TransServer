@@ -1,4 +1,4 @@
-package top.yqingyu.thread;
+package top.yqingyu.trans$server.thread;
 
 import com.alibaba.fastjson2.JSONObject;
 import lombok.SneakyThrows;
@@ -7,11 +7,10 @@ import org.apache.commons.lang3.StringUtils;
 import top.yqingyu.common.qydata.DataMap;
 import top.yqingyu.common.utils.HttpUtil;
 import top.yqingyu.common.utils.ThreadUtil;
+import top.yqingyu.trans$server.main.MainConfig;
 
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
-
-import static top.yqingyu.main.MainConfig.SERVER_CONF;
 
 /**
  * @author YYJ
@@ -24,7 +23,7 @@ import static top.yqingyu.main.MainConfig.SERVER_CONF;
 public class RecordIpThread implements Runnable {
 
 
-    private static final ExecutorService IP_RECORD_THREAD_POOL = ThreadUtil.createQyFixedThreadPool(SERVER_CONF.getData("IP_REC").getIntValue("pool_size"), "IpRec", null);
+    private static final ExecutorService IP_RECORD_THREAD_POOL = ThreadUtil.createQyFixedThreadPool(MainConfig.SERVER_CONF.getData("IP_REC").getIntValue("pool_size"), "IpRec", null);
     private String ip;
 
     public RecordIpThread() {
@@ -45,12 +44,12 @@ public class RecordIpThread implements Runnable {
 
         HashMap<String, String> header = new HashMap<>();
 
-        header.put("token", SERVER_CONF.getData("IP_REC").getString("token"));
+        header.put("token", MainConfig.SERVER_CONF.getData("IP_REC").getString("token"));
         header.put("content-type", "application/json");
 
         DataMap dataMap = new DataMap();
         dataMap.put("ip", ip);
-        JSONObject post = HttpUtil.doPost(SERVER_CONF.getData("IP_REC").getString("host") + "/web/viewnum", header, null, dataMap);
+        JSONObject post = HttpUtil.doPost(MainConfig.SERVER_CONF.getData("IP_REC").getString("host") + "/web/viewnum", header, null, dataMap);
 
 //        HttpResponse post = HttpUtil.doPost("http://localhost:4728", "/web/viewnum", "POST", header, new HashMap<>(), "{\"ip\" : \"" + ip + "\"}");
 

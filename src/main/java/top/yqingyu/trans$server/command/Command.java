@@ -1,15 +1,14 @@
-package top.yqingyu.command;
+package top.yqingyu.trans$server.command;
 
 import top.yqingyu.common.qymsg.MsgTransfer;
 import top.yqingyu.common.qymsg.QyMsg;
-import top.yqingyu.common.utils.StringUtil;
-import top.yqingyu.main.MainConfig;
 
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
+import static top.yqingyu.trans$server.main.MainConfig.*;
 
 /**
  * @author YYJ
@@ -41,7 +40,7 @@ public class Command {
     }
 
     protected void deal(SocketChannel socketChannel, Selector selector, QyMsg msg, ArrayList<QyMsg> rtnMsg) throws Exception {
-        QyMsg clone = MainConfig.NORM_MSG.clone();
+        QyMsg clone = NORM_MSG.clone();
         clone.putMsg("\n$>");
         rtnMsg.add(clone);
     }
@@ -57,14 +56,14 @@ public class Command {
         }
     }
 
-    public boolean isMatch(String command) {
+    public final boolean isMatch(String command) {
         if (command == null) {
             return false;
         }
         return command.matches(this.commandRegx);
     }
 
-    public String getCommandRegx() {
+    public final String getCommandRegx() {
         return commandRegx;
     }
 }

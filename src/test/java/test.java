@@ -1,14 +1,6 @@
 import com.alibaba.fastjson2.JSON;
 import lombok.extern.slf4j.Slf4j;
-import top.yqingyu.common.utils.IoUtil;
-import top.yqingyu.common.utils.ThreadUtil;
-
-import java.io.*;
-import java.net.Socket;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.concurrent.ThreadPoolExecutor;
 
 
 /**
@@ -21,21 +13,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Slf4j
 public class test {
 
-    static class A {
-        public void aa(){
-            throw new NullPointerException();
-        }
-    }
-    static class B extends A{
-        @Override
-        public void aa() {
-            System.out.println("1");
-        }
-    }
-    public static void main(String[] args) throws Exception {
-        A b = new B();
 
-        b.aa();
+    public static void main(String[] args) throws Exception {
 //
 //                String aa = "java.util.concurrent.ExecutionException: java.lang.NullPointerException: Cannot invoke \"java.lang.Boolean.booleanValue()\" because the return value of \"java.util.Hashtable.get(Object)\"";
 //
@@ -106,7 +85,6 @@ public class test {
 //            }
 //            i++;
 //        }
-
 
 
 //        }

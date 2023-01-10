@@ -1,13 +1,14 @@
-package top.yqingyu.event$handler;
+package top.yqingyu.trans$server.event$handler;
 
 import lombok.extern.slf4j.Slf4j;
 import top.yqingyu.common.nio$server.core.EventHandler;
 import top.yqingyu.common.qymsg.MsgTransfer;
 import top.yqingyu.common.qymsg.QyMsg;
 import top.yqingyu.common.utils.ThreadUtil;
-import top.yqingyu.component.RegistryCenter;
-import top.yqingyu.thread.DealMsgThread;
-import top.yqingyu.thread.RecordIpThread;
+import top.yqingyu.trans$server.component.RegistryCenter;
+import top.yqingyu.trans$server.thread.DealMsgThread;
+import top.yqingyu.trans$server.thread.RecordIpThread;
+import top.yqingyu.trans$server.main.MainConfig;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -15,10 +16,6 @@ import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
-
-import static top.yqingyu.main.MainConfig.CI_PartitionMsgQueue;
-import static top.yqingyu.main.MainConfig.CLIENT_RESPONSE_TIMEOUT;
-import static top.yqingyu.thread.ClientTransThread.POOL;
 
 /**
  * @author YYJ
@@ -54,7 +51,7 @@ public class S$CtEventHandler extends EventHandler {
                 InetSocketAddress socketAddress = (InetSocketAddress) socketChannel.get().getRemoteAddress();
                 ip.set(socketAddress.getHostString());
 
-                QyMsg QyMsg = MsgTransfer.readQyMsg(socketChannel.get(), CI_PartitionMsgQueue, 0L);
+                QyMsg QyMsg = MsgTransfer.readQyMsg(socketChannel.get(), MainConfig.CI_PartitionMsgQueue, 0L);
                 if (RegistryCenter.isRegistered(QyMsg.getFrom())) {
                     log.debug("{}", QyMsg);
                     new DealMsgThread(socketChannel.get(), selector).deal2(QyMsg);
@@ -66,7 +63,7 @@ public class S$CtEventHandler extends EventHandler {
                 return "";
             });
             READ_POOL.execute(futureTask);
-            futureTask.get(CLIENT_RESPONSE_TIMEOUT, TimeUnit.MILLISECONDS);
+            futureTask.get(MainConfig.CLIENT_RESPONSE_TIMEOUT, TimeUnit.MILLISECONDS);
 
         } catch (TimeoutException e) {
             log.error("", e);

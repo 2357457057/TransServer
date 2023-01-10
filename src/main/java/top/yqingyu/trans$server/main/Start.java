@@ -1,18 +1,16 @@
-package top.yqingyu.main;
+package top.yqingyu.trans$server.main;
 
 import lombok.extern.slf4j.Slf4j;
 import top.yqingyu.common.nio$server.CreateServer;
 import top.yqingyu.common.qymsg.MsgTransfer;
 import top.yqingyu.common.utils.ThreadUtil;
-import top.yqingyu.event$handler.MainEventHandler;
-import top.yqingyu.event$handler.S$CtEventHandler;
-import top.yqingyu.thread.ClientMonitorThread;
-import top.yqingyu.thread.ClientTransThread;
+import top.yqingyu.trans$server.event$handler.MainEventHandler;
+import top.yqingyu.trans$server.event$handler.S$CtEventHandler;
+import top.yqingyu.trans$server.thread.ClientMonitorThread;
+import top.yqingyu.trans$server.thread.ClientTransThread;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
-
-import static top.yqingyu.main.MainConfig.*;
 
 /**
  * @author YYJ
@@ -35,13 +33,13 @@ public class Start {
         log.info("init Transfer");
         MsgTransfer.init(
                 32,
-                MSG_BODY_LENGTH_MAX,
+                MainConfig.MSG_BODY_LENGTH_MAX,
                 ThreadUtil.createQyFixedThreadPool(Runtime.getRuntime().availableProcessors() * 3, "transPool", null)
         );
 
         log.info("starting main server");
         CreateServer
-                .createDefault(PORT_MAIN, "Main")
+                .createDefault(MainConfig.PORT_MAIN, "Main")
                 .implEvent(MainEventHandler.class)
                 .defaultFixRouter(16)
                 .listenPort()
@@ -52,7 +50,7 @@ public class Start {
                 .createDefault("S$Ct")
                 .implEvent(S$CtEventHandler.class)
                 .defaultFixRouter(8,4)
-                .listenPort(PORT_INTER)
+                .listenPort(MainConfig.PORT_INTER)
                 .start();
 
 

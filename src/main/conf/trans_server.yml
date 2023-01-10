@@ -7,14 +7,14 @@ server:
   client_response_timeout: 2000
   ac_str: okkkko
   heart_beat: HEART_BEAT
-  heart-beat-percent: 19.99
+  heart-beat-percent: 0.99
   msg:
     body-length-max: 2048
   CMT:
     init: 5
     period: 20
     unit: SECONDS
-    timeout: 20000
+    timeout: 30000
   IP_REC:
     pool_size: 8
     token:  eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1aWQiOiI0IiwiaXAiOiIxOTIuMTY4LjI0My4yMzUiLCJleHAiOjE2OTAwNzc4NTF9.Ybd-TZdQVjnHgir5E7eLz5hua-JR4Ja-jUmFxCKaoWwbO-ux1QmwR4NZ3sdOG8wcY_y_OlBzKMU1yTIc-X7t3Q

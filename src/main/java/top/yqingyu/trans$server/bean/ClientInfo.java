@@ -1,4 +1,4 @@
-package top.yqingyu.bean;
+package top.yqingyu.trans$server.bean;
 
 
 import com.alibaba.fastjson2.JSON;

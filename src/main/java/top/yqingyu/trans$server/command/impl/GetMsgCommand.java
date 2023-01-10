@@ -1,14 +1,12 @@
-package top.yqingyu.command.impl;
+package top.yqingyu.trans$server.command.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import top.yqingyu.command.Command;
+import top.yqingyu.trans$server.command.Command;
 import top.yqingyu.common.qymsg.DataType;
 import top.yqingyu.common.qymsg.MsgHelper;
-import top.yqingyu.common.qymsg.MsgTransfer;
 import top.yqingyu.common.qymsg.QyMsg;
-import top.yqingyu.main.MainConfig;
+import top.yqingyu.trans$server.main.MainConfig;
 
-import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
@@ -17,16 +15,16 @@ import java.util.ArrayList;
 /**
  * @author YYJ
  * @version 1.0.0
- * @ClassName top.yqingyu.command.impl.QueueCommand
+ * @ClassName top.yqingyu.command.impl.getMsg
  * @description
  * @createTime 2022年09月07日 10:36:00
  */
 @Slf4j
-public class QueueCommand extends Command {
+public class GetMsgCommand extends Command {
 
     private static final String commandRegx = "getMsg[ \\d]*";
 
-    public QueueCommand() {
+    public GetMsgCommand() {
         super(commandRegx);
     }
 
