@@ -1,5 +1,8 @@
 import com.alibaba.fastjson2.JSON;
 import lombok.extern.slf4j.Slf4j;
+import top.yqingyu.common.qymsg.extra.bean.KeyValue;
+
+import java.lang.reflect.Field;
 import java.util.HashMap;
 
 
@@ -15,6 +18,9 @@ public class test {
 
 
     public static void main(String[] args) throws Exception {
+
+
+
 //
 //                String aa = "java.util.concurrent.ExecutionException: java.lang.NullPointerException: Cannot invoke \"java.lang.Boolean.booleanValue()\" because the return value of \"java.util.Hashtable.get(Object)\"";
 //

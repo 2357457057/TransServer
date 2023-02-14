@@ -1,6 +1,8 @@
 package top.yqingyu.trans$server.command.impl;
 
 import com.alibaba.fastjson2.JSONObject;
+import top.yqingyu.common.qymsg.extra.bean.KeyValue;
+import top.yqingyu.common.qymsg.extra.bean.StringKey;
 import top.yqingyu.trans$server.command.Command;
 import top.yqingyu.common.qydata.ChoiceHashMap;
 import top.yqingyu.common.qydata.ConcurrentQyMap;
@@ -9,6 +11,7 @@ import top.yqingyu.common.qymsg.MsgHelper;
 import top.yqingyu.common.qymsg.QyMsg;
 import top.yqingyu.trans$server.main.MainConfig;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
@@ -27,60 +30,69 @@ public class KeyCommand extends Command {
         super("key");
     }
 
-    private static final ChoiceHashMap<String, Method> DEAL_MAP = new ChoiceHashMap<>();
-    private static final ConcurrentQyMap<String, ConcurrentQyMap<String, Object>> ROOT_MAP = new ConcurrentQyMap<>();
+    private static final ChoiceHashMap<KeyValue.DataType, Method> DEAL_METHODS = new ChoiceHashMap<>();
+    private static final ConcurrentQyMap<KeyValue.DataType, ConcurrentQyMap<String, Object>> ROOT_CONTAINER = new ConcurrentQyMap<>();
 
     static {
+        Field[] dataType = KeyValue.DataType.class.getFields();
         Method[] methods = KeyCommand.class.getDeclaredMethods();
-        for (Method method : methods) {
-            if (method.getName().matches("deal.*Key")) {
-                method.setAccessible(true);
-                DEAL_MAP.put(method.getName().replace("deal", ""), method);
+
+        for (Field field : dataType) {
+            KeyValue.DataType dtp;
+            try {
+                dtp = (KeyValue.DataType) field.get(null);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
             }
-            if ("emptyDeal".equals(method.getName())) {
-                method.setAccessible(true);
-                DEAL_MAP.putDft("emptyDeal", method);
+            String typeName = dtp.getName();
+            for (Method method : methods) {
+                if (method.getName().matches("deal" + typeName + "Key")) {
+                    method.setAccessible(true);
+                    DEAL_METHODS.put(dtp, method);
+                    break;
+                }
+                if ("emptyDeal".equals(method.getName())) {
+                    method.setAccessible(true);
+                    DEAL_METHODS.putDft(KeyValue.DataType.OTHER, method);
+                    break;
+                }
             }
         }
-
-        ROOT_MAP.put("StringKey", new ConcurrentQyMap<>());
+        ROOT_CONTAINER.put(KeyValue.DataType.STRING, new ConcurrentQyMap<>());
 
     }
 
     @Override
     protected void deal(SocketChannel socketChannel, Selector selector, QyMsg msg, ArrayList<QyMsg> rtnMsg) throws Exception {
         DataMap map = msg.getDataMap();
-        JSONObject data = map.getJSONObject("key");
-        String type = data.getString("KeyType");
-        Method method = DEAL_MAP.get(type);
+        KeyValue key = map.getObject("key", KeyValue.class);
+        Method method = DEAL_METHODS.get(key.getDataType());
         QyMsg invoke = (QyMsg) method.invoke(this, msg);
         String s = MsgHelper.gainMsg(invoke);
-        s+="\n$>";
+        s += "\n$>";
         invoke.putMsg(s);
         rtnMsg.add(invoke);
     }
 
     private QyMsg dealStringKey(QyMsg msg) throws CloneNotSupportedException {
-        ConcurrentQyMap<String, Object> stringMap = ROOT_MAP.get("StringKey");
+        ConcurrentQyMap<String, Object> STRING_CONTAINER = ROOT_CONTAINER.get(KeyValue.DataType.STRING);
         DataMap map = msg.getDataMap();
-        JSONObject data = map.getJSONObject("key");
-        String type = data.getString("dealType");
-        String key = data.getString("key");
+        StringKey KeyVal = map.getObject("key", StringKey.class);
+        KeyValue.OperatingState operatingState = KeyVal.getOperatingState();
+        String key = KeyVal.getKey();
+        String val = KeyVal.getVal();
         QyMsg clone = MainConfig.NORM_MSG.clone();
         DataMap dataMap = clone.getDataMap();
-        JSONObject object = new JSONObject();
-        dataMap.put("Key", object);
-
-        switch (type) {
-            case "add" -> {
-                stringMap.put(key, data.getString("val"));
-                object.put(key, data.getString("val"));
+        dataMap.put("key", KeyVal);
+        switch (operatingState) {
+            case ADD -> {
+                STRING_CONTAINER.put(key, val);
                 clone.putMsg("success");
                 dataMap.put("code", "0000");
             }
-            case "get" -> {
-                String o = (String) stringMap.get(key);
-                object.put(key, o);
+            case GET -> {
+                String o = (String) STRING_CONTAINER.get(key);
+                KeyVal.setVal(o);
                 clone.putMsg("success: val: " + o);
                 dataMap.put("code", "0000");
                 if (o == null) {
@@ -88,9 +100,8 @@ public class KeyCommand extends Command {
                     dataMap.put("code", "0000");
                 }
             }
-            case "rm" -> {
-                String o = (String) stringMap.remove(key);
-                object.put(key, o);
+            case REMOVE -> {
+                String o = (String) STRING_CONTAINER.remove(key);
                 clone.putMsg("success");
                 dataMap.put("code", "0000");
             }

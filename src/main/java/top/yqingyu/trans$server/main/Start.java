@@ -1,7 +1,7 @@
 package top.yqingyu.trans$server.main;
 
 import lombok.extern.slf4j.Slf4j;
-import top.yqingyu.common.nio$server.CreateServer;
+import top.yqingyu.common.server$nio.CreateServer;
 import top.yqingyu.common.qymsg.MsgTransfer;
 import top.yqingyu.common.utils.ThreadUtil;
 import top.yqingyu.trans$server.event$handler.MainEventHandler;

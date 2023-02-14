@@ -1,7 +1,8 @@
 package top.yqingyu.trans$server.event$handler;
 
 import lombok.extern.slf4j.Slf4j;
-import top.yqingyu.common.nio$server.core.EventHandler;
+import top.yqingyu.common.bean.NetChannel;
+import top.yqingyu.common.server$nio.core.EventHandler;
 import top.yqingyu.common.qymsg.MsgTransfer;
 import top.yqingyu.common.qymsg.QyMsg;
 import top.yqingyu.common.utils.ThreadUtil;
@@ -13,7 +14,6 @@ import top.yqingyu.trans$server.main.MainConfig;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.Selector;
-import java.nio.channels.SocketChannel;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -37,9 +37,9 @@ public class S$CtEventHandler extends EventHandler {
     }
 
     @Override
-    public void read(Selector selector, SocketChannel channel) throws IOException {
+    public void read(Selector selector, NetChannel channel) throws IOException {
 
-        AtomicReference<SocketChannel> socketChannel = new AtomicReference<>();
+        AtomicReference<NetChannel> socketChannel = new AtomicReference<>();
         AtomicReference<String> ip = new AtomicReference<>();
         String name = Thread.currentThread().getName();
 
@@ -51,10 +51,10 @@ public class S$CtEventHandler extends EventHandler {
                 InetSocketAddress socketAddress = (InetSocketAddress) socketChannel.get().getRemoteAddress();
                 ip.set(socketAddress.getHostString());
 
-                QyMsg QyMsg = MsgTransfer.readQyMsg(socketChannel.get(), MainConfig.CI_PartitionMsgQueue, 0L);
+                QyMsg QyMsg = MsgTransfer.readQyMsg(socketChannel.get().getNChannel(), MainConfig.CI_PartitionMsgQueue, 0L);
                 if (RegistryCenter.isRegistered(QyMsg.getFrom())) {
                     log.debug("{}", QyMsg);
-                    new DealMsgThread(socketChannel.get(), selector).deal2(QyMsg);
+                    new DealMsgThread(socketChannel.get().getNChannel(), selector).deal2(QyMsg);
 
                 } else {
                     socketChannel.get().close();
@@ -68,7 +68,7 @@ public class S$CtEventHandler extends EventHandler {
         } catch (TimeoutException e) {
             log.error("", e);
             RecordIpThread.execute(ip.get());
-            SocketChannel a = socketChannel.get();
+            NetChannel a = socketChannel.get();
             if (a != null) {
                 a.close();
             }
@@ -76,12 +76,12 @@ public class S$CtEventHandler extends EventHandler {
             log.error("", e);
             if (e.getMessage().matches(".*(NumberFormatException|Cannot.*Boolean[.]booleanValue).*"))
                 RecordIpThread.execute(ip.get());
-            SocketChannel a = socketChannel.get();
+            NetChannel a = socketChannel.get();
             if (a != null) {
                 a.close();
             }
         } catch (Exception e) {
-            SocketChannel a = socketChannel.get();
+            NetChannel a = socketChannel.get();
             if (a != null) {
                 a.close();
             }
@@ -91,12 +91,12 @@ public class S$CtEventHandler extends EventHandler {
     }
 
     @Override
-    public void write(Selector selector, SocketChannel selectionKey) throws IOException {
+    public void write(Selector selector, NetChannel selectionKey) throws IOException {
         System.out.println("write");
     }
 
     @Override
-    public void assess(Selector selector, SocketChannel socketChannel) throws Exception {
+    public void assess(Selector selector, NetChannel socketChannel) throws Exception {
 
     }
 }

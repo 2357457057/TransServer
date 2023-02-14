@@ -8,6 +8,7 @@ import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
+
 import static top.yqingyu.trans$server.main.MainConfig.*;
 
 /**
@@ -35,6 +36,7 @@ public class Command {
         ArrayList<QyMsg> rtnMsg = new ArrayList<>(1);
         socketChannel.register(selector, SelectionKey.OP_WRITE);
         deal(socketChannel, selector, msg, rtnMsg);
+        addMsgId(rtnMsg, msg);
         writeMsg(socketChannel, rtnMsg);
         socketChannel.register(selector, SelectionKey.OP_READ);
     }
@@ -65,5 +67,13 @@ public class Command {
 
     public final String getCommandRegx() {
         return commandRegx;
+    }
+
+    void addMsgId(List<QyMsg> rtnMsg, QyMsg msg) {
+        String msgId = msg.gainMsgId();
+        for (QyMsg qyMsg : rtnMsg) {
+            qyMsg.putMsgId(msgId);
+        }
+
     }
 }

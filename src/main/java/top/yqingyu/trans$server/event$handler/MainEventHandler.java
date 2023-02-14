@@ -2,12 +2,12 @@ package top.yqingyu.trans$server.event$handler;
 
 import cn.hutool.core.date.LocalDateTimeUtil;
 import lombok.extern.slf4j.Slf4j;
-import top.yqingyu.common.nio$server.core.EventHandler;
+import top.yqingyu.common.bean.NetChannel;
+import top.yqingyu.common.server$nio.core.EventHandler;
 import top.yqingyu.common.qymsg.MsgHelper;
 import top.yqingyu.common.qymsg.MsgTransfer;
 import top.yqingyu.common.qymsg.MsgType;
 import top.yqingyu.common.qymsg.QyMsg;
-import top.yqingyu.common.utils.PercentUtil;
 import top.yqingyu.common.utils.ThreadUtil;
 import top.yqingyu.trans$server.component.RegistryCenter;
 import top.yqingyu.trans$server.main.MainConfig;
@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
-import java.nio.channels.SocketChannel;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.*;
@@ -51,8 +50,8 @@ public class MainEventHandler extends EventHandler {
      * @throws IOException
      */
     @Override
-    public void read(Selector selector, SocketChannel socketChannel) throws IOException {
-        AtomicReference<SocketChannel> socketChannel_C = new AtomicReference<>();
+    public void read(Selector selector, NetChannel socketChannel) throws IOException {
+        AtomicReference<NetChannel> socketChannel_C = new AtomicReference<>();
         AtomicReference<String> ip = new AtomicReference<>();
 
         String name = Thread.currentThread().getName();
@@ -66,7 +65,7 @@ public class MainEventHandler extends EventHandler {
                 InetSocketAddress socketAddress = (InetSocketAddress) socketChannel.getRemoteAddress();
                 ip.set(socketAddress.getHostString());
 
-                QyMsg thisMsg = MsgTransfer.readQyMsg(socketChannel, MainConfig.Main_PartitionMsgQueue, 0L);
+                QyMsg thisMsg = MsgTransfer.readQyMsg(socketChannel.getNChannel(), MainConfig.Main_PartitionMsgQueue, 0L);
 
                 MsgType type = thisMsg.getMsgType();
 
@@ -75,18 +74,10 @@ public class MainEventHandler extends EventHandler {
                 if (RegistryCenter.isRegistered(thisMsg.getFrom())) {
 
                     if (MsgType.HEART_BEAT == type) {
-
-                        clone = MainConfig.HEART_BEAT_MSG.clone();
-                        clone.putMsg(MainConfig.HEART_BEAT);
-
-                        socketChannel.register(selector, SelectionKey.OP_WRITE);
-                        if (PercentUtil.percentTrue(MainConfig.HEART_BEAT_percent))
-                            MsgTransfer.writeQyMsg(socketChannel, clone);
-                        socketChannel.register(selector, SelectionKey.OP_READ);
                         log.debug("{}", thisMsg.toString());
                     } else {
 
-                        new DealMsgThread(socketChannel, selector).deal(thisMsg);
+                        new DealMsgThread(socketChannel.getNChannel(), selector).deal(thisMsg);
                         LocalDateTime now2 = LocalDateTime.now();
                         long nanos = LocalDateTimeUtil.between(now1, now2, ChronoUnit.MILLIS);
                         log.info("命令执行完成：{}  | {}ms", MsgHelper.gainMsg(thisMsg), nanos);
@@ -94,13 +85,13 @@ public class MainEventHandler extends EventHandler {
                 } else {
                     if (MsgType.AC == type && MainConfig.AC_STR.equals(MsgHelper.gainMsgValue(thisMsg, "AC_STR"))) {
 
-                        if (RegistryCenter.registrationClient(socketChannel, selector, thisMsg)) {
+                        if (RegistryCenter.registrationClient(socketChannel.getNChannel(), selector, thisMsg)) {
                             socketChannel.register(selector, SelectionKey.OP_WRITE);
 
                             clone = MainConfig.AC_MSG.clone();
                             clone.putMsg(MainConfig.AC_STR);
 
-                            MsgTransfer.writeQyMsg(socketChannel, clone);
+                            MsgTransfer.writeQyMsg(socketChannel.getNChannel(), clone);
                             socketChannel.register(selector, SelectionKey.OP_READ);
 
                             log.info("{}: {}", MainConfig.AC_STR, thisMsg);
@@ -110,7 +101,7 @@ public class MainEventHandler extends EventHandler {
                         log.info("未注册的消息关闭连接{}:{} {} ", remoteAddress.getHostString(), remoteAddress.getPort(), thisMsg);
                         clone = MainConfig.ERR_MSG.clone();
                         clone.putMsg("注册中心无此id");
-                        MsgTransfer.writeQyMsg(socketChannel, clone);
+                        MsgTransfer.writeQyMsg(socketChannel.getNChannel(), clone);
                         socketChannel.close();
                     }
 
@@ -123,7 +114,7 @@ public class MainEventHandler extends EventHandler {
         } catch (TimeoutException e) {
             log.error("", e);
             RecordIpThread.execute(ip.get());
-            SocketChannel a = socketChannel_C.get();
+            NetChannel a = socketChannel_C.get();
             if (a != null) {
                 a.close();
             }
@@ -131,13 +122,13 @@ public class MainEventHandler extends EventHandler {
             log.error("", e);
             if (e.getMessage().matches(".*(NumberFormatException|Cannot.*Boolean[.]booleanValue).*"))
                 RecordIpThread.execute(ip.get());
-            SocketChannel a = socketChannel_C.get();
+            NetChannel a = socketChannel_C.get();
             if (a != null) {
                 a.close();
             }
         } catch (Exception e) {
 
-            SocketChannel a = socketChannel_C.get();
+            NetChannel a = socketChannel_C.get();
             if (a != null) {
                 a.close();
             }
@@ -147,12 +138,12 @@ public class MainEventHandler extends EventHandler {
     }
 
     @Override
-    public void write(Selector selector, SocketChannel socketChannel) throws Exception {
+    public void write(Selector selector, NetChannel socketChannel) throws Exception {
 
     }
 
     @Override
-    public void assess(Selector selector, SocketChannel socketChannel) throws Exception {
+    public void assess(Selector selector, NetChannel socketChannel) throws Exception {
 
     }
 }

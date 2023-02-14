@@ -33,6 +33,8 @@ public record DealMsgThread(SocketChannel socketChannel, Selector selector) {
         try {
             List<Class<?>> classList = ClazzUtil.getClassList("top.yqingyu.trans$server.command.impl", false);
             for (Class<?> clazz : classList) {
+                Constructor<?>[] constructors = clazz.getConstructors();
+                if (constructors.length < 1) continue;
                 Constructor<Command> constructor = (Constructor<Command>) clazz.getConstructor();
                 Command command = constructor.newInstance();
                 COMMANDS.add(command);
