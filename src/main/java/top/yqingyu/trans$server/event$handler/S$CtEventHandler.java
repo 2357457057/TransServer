@@ -92,7 +92,6 @@ public class S$CtEventHandler extends EventHandler {
 
     @Override
     public void write(Selector selector, NetChannel selectionKey) throws IOException {
-        System.out.println("write");
     }
 
     @Override

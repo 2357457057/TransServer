@@ -43,7 +43,6 @@ public class Key extends CommandFather {
         Method[] methods = Key.class.getDeclaredMethods();
 
         for (Method method : methods) {
-            System.out.println(method.getName());
             for (Field field : dataType) {
                 KeyValue.DataType dtp;
                 try {

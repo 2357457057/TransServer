@@ -1,5 +1,7 @@
 package top.yqingyu.trans$server.command;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import top.yqingyu.common.annotation.Init;
 import top.yqingyu.common.qymsg.MsgTransfer;
 import top.yqingyu.common.qymsg.QyMsg;
@@ -26,6 +28,7 @@ import static top.yqingyu.trans$server.main.MainConfig.*;
 public class CommandFather {
 
 
+    private static final Logger logger = LoggerFactory.getLogger(CommandFather.class);
     private final String commandRegx;
 
     public CommandFather() {
@@ -41,18 +44,16 @@ public class CommandFather {
     @Init
     public void loadCommand() {
         try {
-            List<Class<?>> classList = ClazzUtil.getClassList("top.yqingyu.trans$server.commandFather.impl", false);
+            List<Class<?>> classList = ClazzUtil.getClassListByAnnotation("top.yqingyu.trans$server.command", Command.class);
             for (Class<?> clazz : classList) {
                 Constructor<?>[] constructors = clazz.getConstructors();
                 if (constructors.length < 1) continue;
                 Constructor<CommandFather> constructor = (Constructor<CommandFather>) clazz.getConstructor();
                 CommandFather commandFather = constructor.newInstance();
-                COMMAND.add(commandFather);
+                COMMAND.add(0, commandFather);
             }
-            CommandFather commandFather = new CommandFather();
-            COMMAND.add(commandFather);
         } catch (Exception e) {
-            log.error("{}", e);
+            logger.error("", e);
         }
     }
 
