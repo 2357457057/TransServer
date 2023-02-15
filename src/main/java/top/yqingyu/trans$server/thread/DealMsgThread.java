@@ -2,63 +2,39 @@ package top.yqingyu.trans$server.thread;
 
 import lombok.extern.slf4j.Slf4j;
 import top.yqingyu.trans$server.bean.ClientInfo;
-import top.yqingyu.trans$server.command.Command;
+import top.yqingyu.trans$server.command.CommandFather;
 import top.yqingyu.common.qydata.DataMap;
 import top.yqingyu.common.qymsg.MsgHelper;
 import top.yqingyu.common.qymsg.MsgTransfer;
 import top.yqingyu.common.qymsg.MsgType;
 import top.yqingyu.common.qymsg.QyMsg;
-import top.yqingyu.common.utils.ClazzUtil;
 import top.yqingyu.trans$server.component.RegistryCenter;
 import top.yqingyu.trans$server.main.S$CtConfig;
 import top.yqingyu.trans$server.main.MainConfig;
 
-import java.lang.reflect.Constructor;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import static top.yqingyu.trans$server.command.CommandFather.COMMAND;
+
 
 @SuppressWarnings("all")
 @Slf4j
 public record DealMsgThread(SocketChannel socketChannel, Selector selector) {
 
-
-    private static final ArrayList<Command> COMMANDS = new ArrayList<>();
-
-
-    static {
-        try {
-            List<Class<?>> classList = ClazzUtil.getClassList("top.yqingyu.trans$server.command.impl", false);
-            for (Class<?> clazz : classList) {
-                Constructor<?>[] constructors = clazz.getConstructors();
-                if (constructors.length < 1) continue;
-                Constructor<Command> constructor = (Constructor<Command>) clazz.getConstructor();
-                Command command = constructor.newInstance();
-                COMMANDS.add(command);
-            }
-            Command command = new Command();
-            COMMANDS.add(command);
-        } catch (Exception e) {
-            log.error("{}", e);
-        }
-    }
-
-
     public void deal(QyMsg qyMsg) throws Exception {
 
         log.info("DEAL> {}", qyMsg.toString());
-        AtomicReference<Command> a = new AtomicReference<>();
+        AtomicReference<CommandFather> a = new AtomicReference<>();
 
         QyMsg clone;
 
         try {
-            for (int i = 0; i < COMMANDS.size(); i++) {
-                Command command = COMMANDS.get(i);
-                if (command.isMatch(MsgHelper.gainMsg(qyMsg))) {
-                    a.set(command);
+            for (int i = 0; i < COMMAND.size(); i++) {
+                CommandFather commandFather = COMMAND.get(i);
+                if (commandFather.isMatch(MsgHelper.gainMsg(qyMsg))) {
+                    a.set(commandFather);
                     break;
                 }
             }
@@ -69,9 +45,9 @@ public record DealMsgThread(SocketChannel socketChannel, Selector selector) {
 
         if (a.get() != null) {
             try {
-                Command command = a.get();
-                command.dealCommand(this.socketChannel, this.selector, qyMsg);
-                log.info("执行类: {}", command.getClass().getSimpleName());
+                CommandFather commandFather = a.get();
+                commandFather.dealCommand(this.socketChannel, this.selector, qyMsg);
+                log.info("执行类: {}", commandFather.getClass().getSimpleName());
             } catch (Exception e) {
                 this.socketChannel.register(this.selector, SelectionKey.OP_WRITE);
 

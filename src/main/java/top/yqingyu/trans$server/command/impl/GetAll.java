@@ -1,7 +1,8 @@
 package top.yqingyu.trans$server.command.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import top.yqingyu.trans$server.command.Command;
+import top.yqingyu.trans$server.annotation.Command;
+import top.yqingyu.trans$server.command.CommandFather;
 import top.yqingyu.common.qymsg.QyMsg;
 import top.yqingyu.trans$server.thread.DealMsgThread;
 
@@ -14,15 +15,16 @@ import static top.yqingyu.trans$server.main.MainConfig.*;
 /**
  * @author YYJ
  * @version 1.0.0
- * @ClassName top.yqingyu.command.impl.GetAllCommand
+ * @ClassName top.yqingyu.command.impl.GetAll
  * @description
  * @createTime 2023年01月08日 16:51:00
  */
 @Slf4j
-public class GetAllCommand extends Command {
+@Command
+public class GetAll extends CommandFather {
 
 
-    public GetAllCommand() {
+    public GetAll() {
         super("getcmd");
     }
 
@@ -32,11 +34,11 @@ public class GetAllCommand extends Command {
         rtnMsg.add(clone);
         Field commands = DealMsgThread.class.getDeclaredField("COMMANDS");
         commands.setAccessible(true);
-        ArrayList<Command> o = (ArrayList<Command>)commands.get(null);
+        ArrayList<CommandFather> o = (ArrayList<CommandFather>)commands.get(null);
 
         StringBuilder sb = new StringBuilder();
-        for (Command command : o) {
-            sb.append(command.getCommandRegx()).append("\n");
+        for (CommandFather commandFather : o) {
+            sb.append(commandFather.getCommandRegx()).append("\n");
         }
         clone.putMsg(sb);
     }

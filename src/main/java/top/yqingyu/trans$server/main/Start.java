@@ -3,6 +3,7 @@ package top.yqingyu.trans$server.main;
 import lombok.extern.slf4j.Slf4j;
 import top.yqingyu.common.server$nio.CreateServer;
 import top.yqingyu.common.qymsg.MsgTransfer;
+import top.yqingyu.common.utils.InitUtil;
 import top.yqingyu.common.utils.ThreadUtil;
 import top.yqingyu.trans$server.event$handler.MainEventHandler;
 import top.yqingyu.trans$server.event$handler.S$CtEventHandler;
@@ -36,6 +37,8 @@ public class Start {
                 MainConfig.MSG_BODY_LENGTH_MAX,
                 ThreadUtil.createQyFixedThreadPool(Runtime.getRuntime().availableProcessors() * 3, "transPool", null)
         );
+        log.info("starting main server");
+        InitUtil.init("top.yqingyu.trans$server");
 
         log.info("starting main server");
         CreateServer

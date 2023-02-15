@@ -1,6 +1,7 @@
 package top.yqingyu.trans$server.command.impl;
 
-import top.yqingyu.trans$server.command.Command;
+import top.yqingyu.trans$server.annotation.Command;
+import top.yqingyu.trans$server.command.CommandFather;
 import top.yqingyu.common.qymsg.QyMsg;
 import top.yqingyu.trans$server.component.RegistryCenter;
 import top.yqingyu.trans$server.main.MainConfig;
@@ -16,12 +17,13 @@ import java.util.ArrayList;
  * @description 退出
  * @modified by
  */
-public class QuitCommand extends Command {
+@Command
+public class Quit extends CommandFather {
 
 
     private static final String commandRegx = "(quit|exit).*";
 
-    public QuitCommand() {
+    public Quit() {
         super(commandRegx);
     }
 

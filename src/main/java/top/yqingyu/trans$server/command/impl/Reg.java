@@ -1,6 +1,7 @@
 package top.yqingyu.trans$server.command.impl;
 
-import top.yqingyu.trans$server.command.Command;
+import top.yqingyu.trans$server.annotation.Command;
+import top.yqingyu.trans$server.command.CommandFather;
 import top.yqingyu.common.qymsg.MsgHelper;
 import top.yqingyu.common.qymsg.QyMsg;
 import top.yqingyu.trans$server.component.RegistryCenter;
@@ -19,11 +20,12 @@ import java.util.Iterator;
  * @description 注册信息
  * @modified by
  */
-public class RegCommand extends Command {
+@Command
+public class Reg extends CommandFather {
 
     private static final String commandRegx = "reg.*";
 
-    public RegCommand() {
+    public Reg() {
         super(commandRegx);
     }
 

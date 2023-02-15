@@ -1,8 +1,12 @@
 package top.yqingyu.trans$server.command;
 
+import top.yqingyu.common.annotation.Init;
 import top.yqingyu.common.qymsg.MsgTransfer;
 import top.yqingyu.common.qymsg.QyMsg;
+import top.yqingyu.common.utils.ClazzUtil;
+import top.yqingyu.trans$server.annotation.Command;
 
+import java.lang.reflect.Constructor;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
@@ -18,17 +22,38 @@ import static top.yqingyu.trans$server.main.MainConfig.*;
  * @description 所有的命令都必须实现本接口
  * @modified by
  */
-public class Command {
+@Command
+public class CommandFather {
 
 
     private final String commandRegx;
 
-    public Command() {
+    public CommandFather() {
         commandRegx = "([\n\r]|.)*";
     }
 
-    public Command(String commandRegx) {
+    public CommandFather(String commandRegx) {
         this.commandRegx = commandRegx;
+    }
+
+    public static final ArrayList<CommandFather> COMMAND = new ArrayList<>();
+
+    @Init
+    public void loadCommand() {
+        try {
+            List<Class<?>> classList = ClazzUtil.getClassList("top.yqingyu.trans$server.commandFather.impl", false);
+            for (Class<?> clazz : classList) {
+                Constructor<?>[] constructors = clazz.getConstructors();
+                if (constructors.length < 1) continue;
+                Constructor<CommandFather> constructor = (Constructor<CommandFather>) clazz.getConstructor();
+                CommandFather commandFather = constructor.newInstance();
+                COMMAND.add(commandFather);
+            }
+            CommandFather commandFather = new CommandFather();
+            COMMAND.add(commandFather);
+        } catch (Exception e) {
+            log.error("{}", e);
+        }
     }
 
 

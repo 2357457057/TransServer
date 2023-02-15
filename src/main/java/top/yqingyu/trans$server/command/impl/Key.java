@@ -1,9 +1,11 @@
 package top.yqingyu.trans$server.command.impl;
 
 import com.alibaba.fastjson2.JSONObject;
+import top.yqingyu.common.annotation.Init;
 import top.yqingyu.common.qymsg.extra.bean.KeyValue;
 import top.yqingyu.common.qymsg.extra.bean.StringKey;
-import top.yqingyu.trans$server.command.Command;
+import top.yqingyu.trans$server.annotation.Command;
+import top.yqingyu.trans$server.command.CommandFather;
 import top.yqingyu.common.qydata.ChoiceHashMap;
 import top.yqingyu.common.qydata.ConcurrentQyMap;
 import top.yqingyu.common.qydata.DataMap;
@@ -20,32 +22,36 @@ import java.util.ArrayList;
 /**
  * @author YYJ
  * @version 1.0.0
- * @ClassName top.yqingyu.command.impl.KeyCommand
+ * @ClassName top.yqingyu.command.impl.Key
  * @description
  * @createTime 2023年01月09日 23:00:00
  */
-public class KeyCommand extends Command {
+@Command
+public class Key extends CommandFather {
 
-    public KeyCommand() {
+    public Key() {
         super("key");
     }
 
-    private static final ChoiceHashMap<KeyValue.DataType, Method> DEAL_METHODS = new ChoiceHashMap<>();
-    private static final ConcurrentQyMap<KeyValue.DataType, ConcurrentQyMap<String, Object>> ROOT_CONTAINER = new ConcurrentQyMap<>();
+    public static final ChoiceHashMap<KeyValue.DataType, Method> DEAL_METHODS = new ChoiceHashMap<>();
+    public static final ConcurrentQyMap<KeyValue.DataType, ConcurrentQyMap<String, Object>> ROOT_CONTAINER = new ConcurrentQyMap<>();
 
-    static {
+
+    @Init
+    public static void init(){
         Field[] dataType = KeyValue.DataType.class.getFields();
-        Method[] methods = KeyCommand.class.getDeclaredMethods();
+        Method[] methods = Key.class.getDeclaredMethods();
 
-        for (Field field : dataType) {
-            KeyValue.DataType dtp;
-            try {
-                dtp = (KeyValue.DataType) field.get(null);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-            String typeName = dtp.getName();
-            for (Method method : methods) {
+        for (Method method : methods) {
+            System.out.println(method.getName());
+            for (Field field : dataType) {
+                KeyValue.DataType dtp;
+                try {
+                    dtp = (KeyValue.DataType) field.get(null);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+                String typeName = dtp.getName();
                 if (method.getName().matches("deal" + typeName + "Key")) {
                     method.setAccessible(true);
                     DEAL_METHODS.put(dtp, method);
@@ -59,9 +65,7 @@ public class KeyCommand extends Command {
             }
         }
         ROOT_CONTAINER.put(KeyValue.DataType.STRING, new ConcurrentQyMap<>());
-
     }
-
     @Override
     protected void deal(SocketChannel socketChannel, Selector selector, QyMsg msg, ArrayList<QyMsg> rtnMsg) throws Exception {
         DataMap map = msg.getDataMap();
