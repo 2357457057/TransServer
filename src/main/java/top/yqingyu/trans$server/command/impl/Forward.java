@@ -3,7 +3,7 @@ package top.yqingyu.trans$server.command.impl;
 import lombok.extern.slf4j.Slf4j;
 import top.yqingyu.trans$server.annotation.Command;
 import top.yqingyu.trans$server.bean.ClientInfo;
-import top.yqingyu.trans$server.command.CommandFather;
+import top.yqingyu.trans$server.command.ParentCommand;
 import top.yqingyu.common.qydata.DataMap;
 import top.yqingyu.common.qymsg.MsgHelper;
 import top.yqingyu.common.qymsg.QyMsg;
@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
  */
 @Slf4j
 @Command
-public class Forward extends CommandFather {
+public class Forward extends ParentCommand {
     //65535
     private static final String commandRegx = "^(forward)" + "(" + "( ){1,5}" + "((" + "((-)(s|stream))" + "(( ){1,5})([\\w]{8}(-))((([\\w]{4})(-)){3})([\\w]{12})" +          //客户端id
             "(( ){1,5})((6[0-4][\\d]{3})|(65[0-4][\\d]{2})|(655[0-2][\\d])|(6553[0-5])|([1-5][\\d]{4})|([\\d]{0,4}))" +   //端口号

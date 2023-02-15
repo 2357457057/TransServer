@@ -4,7 +4,7 @@ import cn.hutool.core.date.LocalDateTimeUtil;
 import lombok.extern.slf4j.Slf4j;
 import top.yqingyu.trans$server.annotation.Command;
 import top.yqingyu.trans$server.bean.ClientInfo;
-import top.yqingyu.trans$server.command.CommandFather;
+import top.yqingyu.trans$server.command.ParentCommand;
 import top.yqingyu.common.qydata.DataMap;
 import top.yqingyu.common.qymsg.MsgHelper;
 import top.yqingyu.common.qymsg.QyMsg;
@@ -28,7 +28,7 @@ import java.util.concurrent.TimeoutException;
  */
 @Command
 @Slf4j
-public class Link extends CommandFather {
+public class Link extends ParentCommand {
 
     private static final String commandRegx = "^(link)(( )((-)([lhseip]{1,5}|show|help|link)(( )([\\u4e00-\\u9fa5\\w/.\\\\_-]{0,200}))?)|([\\u4e00-\\u9fa5\\w/.\\\\_]{0,200}))?$";
 

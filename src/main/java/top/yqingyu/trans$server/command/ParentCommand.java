@@ -25,36 +25,37 @@ import static top.yqingyu.trans$server.main.MainConfig.*;
  * @modified by
  */
 @Command
-public class CommandFather {
+public class ParentCommand {
 
 
-    private static final Logger logger = LoggerFactory.getLogger(CommandFather.class);
+    private static final Logger logger = LoggerFactory.getLogger(ParentCommand.class);
     private final String commandRegx;
 
-    public CommandFather() {
+    public ParentCommand() {
         commandRegx = "([\n\r]|.)*";
     }
 
-    public CommandFather(String commandRegx) {
+    public ParentCommand(String commandRegx) {
         this.commandRegx = commandRegx;
     }
 
-    public static final ArrayList<CommandFather> COMMAND = new ArrayList<>();
+    public static final ArrayList<ParentCommand> COMMAND = new ArrayList<>();
 
     @Init
     public void loadCommand() {
         try {
-            List<Class<?>> classList = ClazzUtil.getClassListByAnnotation("top.yqingyu.trans$server.command", Command.class);
+            List<Class<?>> classList = ClazzUtil.getClassListByAnnotation("top.yqingyu.trans$server.command.impl", Command.class);
             for (Class<?> clazz : classList) {
                 Constructor<?>[] constructors = clazz.getConstructors();
                 if (constructors.length < 1) continue;
-                Constructor<CommandFather> constructor = (Constructor<CommandFather>) clazz.getConstructor();
-                CommandFather commandFather = constructor.newInstance();
-                COMMAND.add(0, commandFather);
+                Constructor<ParentCommand> constructor = (Constructor<ParentCommand>) clazz.getConstructor();
+                ParentCommand parentCommand = constructor.newInstance();
+                COMMAND.add(parentCommand);
             }
         } catch (Exception e) {
             logger.error("", e);
         }
+        COMMAND.add(new ParentCommand());
     }
 
 

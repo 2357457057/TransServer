@@ -2,7 +2,7 @@ package top.yqingyu.trans$server.command.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import top.yqingyu.trans$server.annotation.Command;
-import top.yqingyu.trans$server.command.CommandFather;
+import top.yqingyu.trans$server.command.ParentCommand;
 import top.yqingyu.common.qymsg.QyMsg;
 import top.yqingyu.trans$server.thread.DealMsgThread;
 
@@ -21,7 +21,7 @@ import static top.yqingyu.trans$server.main.MainConfig.*;
  */
 @Slf4j
 @Command
-public class GetAll extends CommandFather {
+public class GetAll extends ParentCommand {
 
 
     public GetAll() {
@@ -34,11 +34,11 @@ public class GetAll extends CommandFather {
         rtnMsg.add(clone);
         Field commands = DealMsgThread.class.getDeclaredField("COMMANDS");
         commands.setAccessible(true);
-        ArrayList<CommandFather> o = (ArrayList<CommandFather>)commands.get(null);
+        ArrayList<ParentCommand> o = (ArrayList<ParentCommand>)commands.get(null);
 
         StringBuilder sb = new StringBuilder();
-        for (CommandFather commandFather : o) {
-            sb.append(commandFather.getCommandRegx()).append("\n");
+        for (ParentCommand parentCommand : o) {
+            sb.append(parentCommand.getCommandRegx()).append("\n");
         }
         clone.putMsg(sb);
     }

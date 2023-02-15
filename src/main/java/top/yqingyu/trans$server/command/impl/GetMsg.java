@@ -2,7 +2,7 @@ package top.yqingyu.trans$server.command.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import top.yqingyu.trans$server.annotation.Command;
-import top.yqingyu.trans$server.command.CommandFather;
+import top.yqingyu.trans$server.command.ParentCommand;
 import top.yqingyu.common.qymsg.DataType;
 import top.yqingyu.common.qymsg.MsgHelper;
 import top.yqingyu.common.qymsg.QyMsg;
@@ -22,7 +22,7 @@ import java.util.ArrayList;
  */
 @Slf4j
 @Command
-public class GetMsg extends CommandFather {
+public class GetMsg extends ParentCommand {
 
     private static final String commandRegx = "getMsg[ \\d]*";
 

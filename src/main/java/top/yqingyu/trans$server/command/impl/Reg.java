@@ -1,7 +1,7 @@
 package top.yqingyu.trans$server.command.impl;
 
 import top.yqingyu.trans$server.annotation.Command;
-import top.yqingyu.trans$server.command.CommandFather;
+import top.yqingyu.trans$server.command.ParentCommand;
 import top.yqingyu.common.qymsg.MsgHelper;
 import top.yqingyu.common.qymsg.QyMsg;
 import top.yqingyu.trans$server.component.RegistryCenter;
@@ -21,7 +21,7 @@ import java.util.Iterator;
  * @modified by
  */
 @Command
-public class Reg extends CommandFather {
+public class Reg extends ParentCommand {
 
     private static final String commandRegx = "reg.*";
 

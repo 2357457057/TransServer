@@ -5,7 +5,7 @@ import top.yqingyu.common.annotation.Init;
 import top.yqingyu.common.qymsg.extra.bean.KeyValue;
 import top.yqingyu.common.qymsg.extra.bean.StringKey;
 import top.yqingyu.trans$server.annotation.Command;
-import top.yqingyu.trans$server.command.CommandFather;
+import top.yqingyu.trans$server.command.ParentCommand;
 import top.yqingyu.common.qydata.ChoiceHashMap;
 import top.yqingyu.common.qydata.ConcurrentQyMap;
 import top.yqingyu.common.qydata.DataMap;
@@ -27,7 +27,7 @@ import java.util.ArrayList;
  * @createTime 2023年01月09日 23:00:00
  */
 @Command
-public class Key extends CommandFather {
+public class Key extends ParentCommand {
 
     public Key() {
         super("key");

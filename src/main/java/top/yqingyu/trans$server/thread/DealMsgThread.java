@@ -2,7 +2,7 @@ package top.yqingyu.trans$server.thread;
 
 import lombok.extern.slf4j.Slf4j;
 import top.yqingyu.trans$server.bean.ClientInfo;
-import top.yqingyu.trans$server.command.CommandFather;
+import top.yqingyu.trans$server.command.ParentCommand;
 import top.yqingyu.common.qydata.DataMap;
 import top.yqingyu.common.qymsg.MsgHelper;
 import top.yqingyu.common.qymsg.MsgTransfer;
@@ -16,7 +16,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.atomic.AtomicReference;
-import static top.yqingyu.trans$server.command.CommandFather.COMMAND;
+import static top.yqingyu.trans$server.command.ParentCommand.COMMAND;
 
 
 @SuppressWarnings("all")
@@ -26,15 +26,15 @@ public record DealMsgThread(SocketChannel socketChannel, Selector selector) {
     public void deal(QyMsg qyMsg) throws Exception {
 
         log.info("DEAL> {}", qyMsg.toString());
-        AtomicReference<CommandFather> a = new AtomicReference<>();
+        AtomicReference<ParentCommand> a = new AtomicReference<>();
 
         QyMsg clone;
 
         try {
             for (int i = 0; i < COMMAND.size(); i++) {
-                CommandFather commandFather = COMMAND.get(i);
-                if (commandFather.isMatch(MsgHelper.gainMsg(qyMsg))) {
-                    a.set(commandFather);
+                ParentCommand parentCommand = COMMAND.get(i);
+                if (parentCommand.isMatch(MsgHelper.gainMsg(qyMsg))) {
+                    a.set(parentCommand);
                     break;
                 }
             }
@@ -45,9 +45,9 @@ public record DealMsgThread(SocketChannel socketChannel, Selector selector) {
 
         if (a.get() != null) {
             try {
-                CommandFather commandFather = a.get();
-                commandFather.dealCommand(this.socketChannel, this.selector, qyMsg);
-                log.info("执行类: {}", commandFather.getClass().getSimpleName());
+                ParentCommand parentCommand = a.get();
+                parentCommand.dealCommand(this.socketChannel, this.selector, qyMsg);
+                log.info("执行类: {}", parentCommand.getClass().getSimpleName());
             } catch (Exception e) {
                 this.socketChannel.register(this.selector, SelectionKey.OP_WRITE);
 
