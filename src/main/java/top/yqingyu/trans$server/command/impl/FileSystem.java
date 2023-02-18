@@ -36,7 +36,7 @@ public class FileSystem extends ParentCommand {
     protected void deal(SocketChannel socketChannel, Selector selector, QyMsg msg, ArrayList<QyMsg> rtnMsg) throws Exception {
         String id = msg.getFrom();
         ClientInfo clientInfo = RegistryCenter.getClientInfo(id);
-        String msgStr = MsgHelper.gainMsg(msg);
+        String msgStr = MsgHelper.gainMsg(msg).trim();
         String filesystem = "(([Ff])ilesystem)";
         String spase = "( ){1,4}";
         QyMsg clone = MainConfig.NORM_MSG.clone();
@@ -87,9 +87,9 @@ public class FileSystem extends ParentCommand {
             File result = new File(resultPath);
             if (result.exists()) {
                 clientInfo.setCurrentPath(resultPath);
-                clone.putMsg("ok\n>$");
+                clone.putMsg("ok\n$>");
             } else {
-                clone.putMsg("not exists!\n>$");
+                clone.putMsg("not exists!\n$>");
             }
         } else if (msgStr.matches(pwd)) {
             clone.putMsg(currentPath);
@@ -97,7 +97,7 @@ public class FileSystem extends ParentCommand {
             sb.append("ls").append("--------").append("显示当前路径下所有文件").append("\n");
             sb.append("cd").append("--------").append("进入目录").append("\n");
             sb.append("pwd").append("--------").append("当前路径").append("\n");
-            sb.append("\n>$");
+            sb.append("\n$>");
             clone.putMsg(sb.toString());
         }
 
