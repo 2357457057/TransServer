@@ -92,11 +92,11 @@ public class FileSystem extends ParentCommand {
             }
         } else if (msgStr.matches(pwd)) {
             clone.putMsg(currentPath);
-
         } else if (msgStr.matches(help)) {
             sb.append("ls").append("--------").append("显示当前路径下所有文件");
             sb.append("cd").append("--------").append("进入目录");
             sb.append("pwd").append("--------").append("当前路径");
+            clone.putMsg(sb.toString());
         }
 
     }
