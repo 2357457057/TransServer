@@ -64,24 +64,24 @@ public class FileSystem extends ParentCommand {
                             .append(LocalDateTimeUtil.format(LocalDateTimeUtil.FULL, LocalDateTimeUtil.of(new Date(f.lastModified())))).append("\n");
                 }
             }
-            sb.append("total: ").append(files == null ? 0 : files.length).append("\n");
             if (isApi) {
                 clone.setDataType(DataType.OBJECT);
                 clone.putMsgData("filesystem", fileObj);
             } else {
+                sb.append("total: ").append(files == null ? 0 : files.length).append("\n");
                 clone.setDataType(DataType.JSON);
                 clone.putMsg(sb.toString());
             }
         } else if (msgStr.matches(cd)) {
             String[] split = msgStr.split(spase);
             String resultPath = "";
-            if (split[3].indexOf("/") == 0) {
-                resultPath = split[3];
+            if (split[2].indexOf("/") == 0) {
+                resultPath = split[2];
                 if (StringUtil.lastIndexOf(resultPath, separator) != resultPath.length() - 1) {
                     resultPath += separator;
                 }
             } else {
-                resultPath = resultPath + split[3];
+                resultPath = resultPath + split[2];
             }
             File result = new File(resultPath);
             if (result.exists()) {

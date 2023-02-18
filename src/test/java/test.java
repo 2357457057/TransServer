@@ -4,6 +4,7 @@ import top.yqingyu.common.qymsg.extra.bean.KeyValue;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.Properties;
 
 
 /**
@@ -18,8 +19,8 @@ public class test {
 
 
     public static void main(String[] args) throws Exception {
-
-
+      String a = "a llll";
+        System.out.println(a.indexOf("a"));
 
 //
 //                String aa = "java.util.concurrent.ExecutionException: java.lang.NullPointerException: Cannot invoke \"java.lang.Boolean.booleanValue()\" because the return value of \"java.util.Hashtable.get(Object)\"";
