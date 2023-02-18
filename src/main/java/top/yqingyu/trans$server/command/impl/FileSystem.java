@@ -59,8 +59,8 @@ public class FileSystem extends ParentCommand {
             if (files != null) {
                 for (File f : files) {
                     fileObj.getChild().add(new FileObj(f));
-                    if (!isApi) sb.append(f.getName()).append("\t")
-                            .append(f.length()).append("\t")
+                    if (!isApi) sb.append(f.getName()).append("\t\t")
+                            .append(f.length()).append("\t\t")
                             .append(LocalDateTimeUtil.format(LocalDateTimeUtil.FULL, LocalDateTimeUtil.of(new Date(f.lastModified())))).append("\n");
                 }
             }
@@ -69,6 +69,7 @@ public class FileSystem extends ParentCommand {
                 clone.putMsgData("filesystem", fileObj);
             } else {
                 sb.append("total: ").append(files == null ? 0 : files.length).append("\n");
+                sb.append("$>");
                 clone.setDataType(DataType.JSON);
                 clone.putMsg(sb.toString());
             }
@@ -86,16 +87,17 @@ public class FileSystem extends ParentCommand {
             File result = new File(resultPath);
             if (result.exists()) {
                 clientInfo.setCurrentPath(resultPath);
-                clone.putMsg("ok");
+                clone.putMsg("ok\n>$");
             } else {
-                clone.putMsg("not exists!");
+                clone.putMsg("not exists!\n>$");
             }
         } else if (msgStr.matches(pwd)) {
             clone.putMsg(currentPath);
         } else if (msgStr.matches(help)) {
-            sb.append("ls").append("--------").append("显示当前路径下所有文件");
-            sb.append("cd").append("--------").append("进入目录");
-            sb.append("pwd").append("--------").append("当前路径");
+            sb.append("ls").append("--------").append("显示当前路径下所有文件").append("\n");
+            sb.append("cd").append("--------").append("进入目录").append("\n");
+            sb.append("pwd").append("--------").append("当前路径").append("\n");
+            sb.append("\n>$");
             clone.putMsg(sb.toString());
         }
 
