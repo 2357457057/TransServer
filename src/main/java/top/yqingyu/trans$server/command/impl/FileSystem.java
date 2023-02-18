@@ -6,6 +6,7 @@ import top.yqingyu.common.qymsg.QyMsg;
 import top.yqingyu.common.qymsg.extra.bean.FileObj;
 import top.yqingyu.common.utils.LocalDateTimeUtil;
 import top.yqingyu.common.utils.StringUtil;
+import top.yqingyu.common.utils.VirtualConsoleTable;
 import top.yqingyu.trans$server.bean.ClientInfo;
 import top.yqingyu.trans$server.command.ParentCommand;
 import top.yqingyu.trans$server.component.RegistryCenter;
@@ -54,24 +55,25 @@ public class FileSystem extends ParentCommand {
         File file = new File(currentPath);
 
         if (msgStr.matches(ls)) {
+            VirtualConsoleTable table = new VirtualConsoleTable();
             FileObj fileObj = new FileObj(file);
             File[] files = file.listFiles();
             if (files != null) {
                 for (File f : files) {
                     fileObj.getChild().add(new FileObj(f));
-                    if (!isApi) sb.append(f.getName()).append("\t\t")
-                            .append(f.length()).append("\t\t")
-                            .append(LocalDateTimeUtil.format(LocalDateTimeUtil.FULL, LocalDateTimeUtil.of(new Date(f.lastModified())))).append("\n");
+                    if (!isApi) table.append(f.getName()).append("\t\t")
+                            .append(f.length() + "").append("\t\t")
+                            .append(LocalDateTimeUtil.format(LocalDateTimeUtil.FULL, LocalDateTimeUtil.of(new Date(f.lastModified())))).newLine();
                 }
             }
             if (isApi) {
                 clone.setDataType(DataType.OBJECT);
                 clone.putMsgData("filesystem", fileObj);
             } else {
-                sb.append("total: ").append(files == null ? 0 : files.length).append("\n");
-                sb.append("$>");
+                table.append("total: ").append("" + (files == null ? 0 : files.length)).newLine();
+                table.append("$>");
                 clone.setDataType(DataType.JSON);
-                clone.putMsg(sb.toString());
+                clone.putMsg(table.toString());
             }
         } else if (msgStr.matches(cd)) {
             String[] split = msgStr.split(spase);
