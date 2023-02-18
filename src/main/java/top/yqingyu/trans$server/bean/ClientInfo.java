@@ -37,6 +37,7 @@ public class ClientInfo implements Serializable {
 
     private String linkedClient;
 
+    private volatile String currentPath = "~/";
 
 
     //客户端交互信息
@@ -127,4 +128,11 @@ public class ClientInfo implements Serializable {
         this.linkedClient = linkedClient;
     }
 
+    public String getCurrentPath() {
+        return currentPath;
+    }
+
+    public void setCurrentPath(String currentPath) {
+        this.currentPath = currentPath;
+    }
 }
