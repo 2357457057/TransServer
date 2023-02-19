@@ -61,9 +61,18 @@ public class FileSystem extends ParentCommand {
             if (files != null) {
                 for (File f : files) {
                     fileObj.getChild().add(new FileObj(f));
-                    if (!isApi) table.append(f.getName()).append("\t\t")
-                            .append(f.length() + "").append("\t\t")
-                            .append(LocalDateTimeUtil.format(LocalDateTimeUtil.FULL, LocalDateTimeUtil.of(new Date(f.lastModified())))).newLine();
+                    if (!isApi) {
+                        table
+                                .append(f.getName())
+                                .append(f.length() + "")
+                                .append(LocalDateTimeUtil.format(LocalDateTimeUtil.FULL, LocalDateTimeUtil.of(new Date(f.lastModified()))));
+                        if(f.isFile()){
+                            table.append("file");
+                        }else {
+                            table.append("dir");
+                        }
+                    }
+                    table.newLine();
                 }
             }
             if (isApi) {
