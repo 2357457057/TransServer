@@ -1,5 +1,8 @@
 package top.yqingyu.trans$server.command.impl;
 
+import com.alibaba.fastjson2.JSON;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import top.yqingyu.common.qymsg.DataType;
 import top.yqingyu.common.qymsg.MsgHelper;
 import top.yqingyu.common.qymsg.QyMsg;
@@ -27,6 +30,7 @@ import java.util.Date;
  */
 public class FileSystem extends ParentCommand {
     private final String separator;
+    private static final Logger logger = LoggerFactory.getLogger(FileSystem.class);
 
     public FileSystem() {
         super("([Ff]ilesystem)( ){1,4}(ls|cd|pwd|help)(( ){1,4}.*)?");
@@ -66,13 +70,14 @@ public class FileSystem extends ParentCommand {
                                 .append(f.getName())
                                 .append(f.length() + "")
                                 .append(LocalDateTimeUtil.format(LocalDateTimeUtil.FULL, LocalDateTimeUtil.of(new Date(f.lastModified()))));
-                        if(f.isFile()){
+                        if (f.isFile()) {
                             table.append("file");
-                        }else {
+                        } else {
                             table.append("dir");
                         }
+                        table.newLine();
+                        logger.info(JSON.toJSONString(f));
                     }
-                    table.newLine();
                 }
             }
             if (isApi) {
