@@ -76,7 +76,6 @@ public class FileSystem extends ParentCommand {
                             table.append("dir");
                         }
                         table.newLine();
-                        logger.info(JSON.toJSONString(f));
                     }
                 }
             }
