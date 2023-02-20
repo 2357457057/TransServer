@@ -1,7 +1,9 @@
 import com.alibaba.fastjson2.JSON;
 import lombok.extern.slf4j.Slf4j;
 import top.yqingyu.common.qymsg.extra.bean.KeyValue;
+import top.yqingyu.common.utils.FileUtil;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Properties;
@@ -19,9 +21,7 @@ public class test {
 
 
     public static void main(String[] args) throws Exception {
-      String a = "a llll";
-        System.out.println(a.indexOf("a"));
-
+        System.out.println(Math.ceil((10 + 0D) / 3));
 //
 //                String aa = "java.util.concurrent.ExecutionException: java.lang.NullPointerException: Cannot invoke \"java.lang.Boolean.booleanValue()\" because the return value of \"java.util.Hashtable.get(Object)\"";
 //

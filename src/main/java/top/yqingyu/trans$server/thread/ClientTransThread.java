@@ -55,14 +55,16 @@ public record ClientTransThread(Socket socket) implements Runnable, Callable<Boo
         Boolean connected = futureTask.get(MainConfig.CLIENT_RESPONSE_TIMEOUT, TimeUnit.MILLISECONDS);
 
         if (connected) {
-            QyMsg QyMsg = MsgTransfer.readMsg(this.socket, MainConfig.MSG_TIMEOUT);;
-            log.info(QyMsg.toString());
+            QyMsg msg = MsgTransfer.readMsg(this.socket, MainConfig.MSG_TIMEOUT);
+            log.info(msg.toString());
 
             QyMsg header = MainConfig.NORM_MSG.clone();
             header.putMsg("ok");
 
-            MsgTransfer.writeMessage(socket,header);
-            CLIENT_TRANS_POOL.put(QyMsg.getFrom(), socket);
+            MsgTransfer.writeMessage(socket, header);
+            CLIENT_TRANS_POOL.put(msg.getFrom(), socket);
+            //TODO 此处会阻断其他链接。。 记得改下
+            POOL.execute(new UploadThread(msg.getFrom(), socket));
         } else {
             if (socket != null)
                 socket.close();
@@ -77,7 +79,8 @@ public record ClientTransThread(Socket socket) implements Runnable, Callable<Boo
         QyMsg QyMsg = null;
 
         try {
-            QyMsg = MsgTransfer.readMsg(this.socket, MainConfig.MSG_TIMEOUT);;
+            QyMsg = MsgTransfer.readMsg(this.socket, MainConfig.MSG_TIMEOUT);
+            ;
         } catch (TimeoutException e) {
             log.error("传输线程异常", e);
             RecordIpThread.execute(this.socket.getInetAddress().getHostAddress());
