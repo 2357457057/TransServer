@@ -74,5 +74,6 @@ public class Upload extends ParentCommand {
             return;
 
         UploadThread.CONTAINER_READY.put(msg.getFrom(), list);
+        qyMsg.putMsg("ok");
     }
 }

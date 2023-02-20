@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author YYJ
@@ -55,13 +56,13 @@ public record ClientTransThread(Socket socket) implements Runnable, Callable<Boo
         Boolean connected = futureTask.get(MainConfig.CLIENT_RESPONSE_TIMEOUT, TimeUnit.MILLISECONDS);
 
         if (connected) {
-            QyMsg msg = MsgTransfer.readMsg(this.socket, MainConfig.MSG_TIMEOUT);
+            QyMsg msg = MsgTransfer.readQyMsg(this.socket, new LinkedBlockingQueue<>(), new AtomicBoolean(true));
             log.info(msg.toString());
 
             QyMsg header = MainConfig.NORM_MSG.clone();
             header.putMsg("ok");
 
-            MsgTransfer.writeMessage(socket, header);
+            MsgTransfer.writeQyMsg(socket, header);
             CLIENT_TRANS_POOL.put(msg.getFrom(), socket);
             //TODO 此处会阻断其他链接。。 记得改下
             POOL.execute(new UploadThread(msg.getFrom(), socket));
@@ -79,16 +80,9 @@ public record ClientTransThread(Socket socket) implements Runnable, Callable<Boo
         QyMsg QyMsg = null;
 
         try {
-            QyMsg = MsgTransfer.readMsg(this.socket, MainConfig.MSG_TIMEOUT);
-            ;
-        } catch (TimeoutException e) {
-            log.error("传输线程异常", e);
-            RecordIpThread.execute(this.socket.getInetAddress().getHostAddress());
-        } catch (ExecutionException e) {
-            log.error("传输线程异常", e);
-            if (e.getMessage().contains("NumberFormatException"))
-                RecordIpThread.execute(this.socket.getInetAddress().getHostAddress());
+            QyMsg = MsgTransfer.readQyMsg(this.socket, new LinkedBlockingQueue<>(), new AtomicBoolean(true));
         } catch (Exception e) {
+            RecordIpThread.execute(this.socket.getInetAddress().getHostAddress());
             log.error("传输线程异常", e);
             return false;
         }
