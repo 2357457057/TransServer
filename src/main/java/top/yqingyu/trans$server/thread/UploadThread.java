@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import top.yqingyu.common.qydata.ConcurrentDataMap;
 import top.yqingyu.common.qymsg.MsgTransfer;
 import top.yqingyu.common.qymsg.extra.bean.TransObj;
+import top.yqingyu.common.utils.LocalDateTimeUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,6 +14,7 @@ import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.StandardOpenOption;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public record UploadThread(String clientId, Socket socket) implements Runnable {
@@ -39,6 +41,7 @@ public record UploadThread(String clientId, Socket socket) implements Runnable {
             try {
                 FileChannel writeChannel = FileChannel.open(file.toPath(), StandardOpenOption.WRITE);
                 long position = 0;
+                LocalDateTime now = LocalDateTime.now();
                 for (; position < size; ) {
                     if (size - position < defaultBufSize) {
                         bytes = new byte[(int) (size - position)];
@@ -54,7 +57,7 @@ public record UploadThread(String clientId, Socket socket) implements Runnable {
                     } while (limit != buffer.position());
                 }
                 writeChannel.close();
-                logger.info("文件上传成功 {} {} {}", file.getAbsolutePath(), position, size);
+                logger.info("文件上传成功 {} cost:{}ms", file.getAbsolutePath(), LocalDateTimeUtil.between(now, LocalDateTime.now()));
             } catch (IOException e) {
                 logger.error("", e);
             }
