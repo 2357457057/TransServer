@@ -53,6 +53,8 @@ public record UploadThread(String clientId, Socket socket) implements Runnable {
                         position += writeChannel.write(buffer, position);
                     } while (limit != buffer.position());
                 }
+                writeChannel.close();
+                logger.info("文件上传成功 {} {} {}", file.getAbsolutePath(), position, size);
             } catch (IOException e) {
                 logger.error("", e);
             }

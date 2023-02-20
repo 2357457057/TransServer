@@ -37,7 +37,7 @@ public class Upload extends ParentCommand {
 
         try {
             for (TransObj obj : list) {
-                String path = StringUtil.isBlank(obj.getSavePath()) ? (currentPath + obj.getFileName()) : obj.getSavePath();
+                String path = StringUtil.isEmpty(obj.getSavePath()) ? (currentPath + obj.getFileName()) : obj.getSavePath();
                 File file = new File(path);
                 if (file.exists()) {
                     if (obj.isOverwrite()) {
@@ -49,8 +49,10 @@ public class Upload extends ParentCommand {
                     } else {
                         isExist.add(obj);
                     }
-                    obj.setSavePath(path);
+                } else {
+                    FileUtil.createSizeFile2(file, obj.getSize());
                 }
+                obj.setSavePath(path);
             }
         } catch (Exception e) {
             qyMsg.putMsgData("msg3", e.getMessage());
