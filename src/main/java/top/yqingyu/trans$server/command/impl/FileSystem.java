@@ -36,7 +36,7 @@ public class FileSystem extends ParentCommand {
     String spase = "( ){1,4}";
 
     public FileSystem() {
-        super("([Ff]ilesystem)( ){1,4}(ls|cd|pwd|help)(( ){1,4}.*)?");
+        super("([Ff]ilesystem)( ){1,4}(ls|cd|pwd|mkdir|rm|help)(( ){1,4}.*)?");
         separator = System.getProperty("file.separator");
     }
 
@@ -137,6 +137,7 @@ public class FileSystem extends ParentCommand {
         if (StringUtil.lastIndexOf(resultPath, separator) != resultPath.length() - 1) {
             resultPath += separator;
         }
+        logger.info("resultPath {}", resultPath);
         return new File(resultPath);
     }
 }

@@ -37,7 +37,7 @@ public class ClientInfo implements Serializable {
 
     private String linkedClient;
 
-    private volatile String currentPath = "~/";
+    private volatile String currentPath = "/data/";
 
 
     //客户端交互信息
