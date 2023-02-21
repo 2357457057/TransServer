@@ -97,7 +97,7 @@ public class FileSystem extends ParentCommand {
                     resultPath += separator;
                 }
             } else {
-                resultPath = resultPath + split[2];
+                resultPath = currentPath + split[2];
             }
             File result = new File(resultPath);
             if (result.exists()) {
