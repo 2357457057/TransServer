@@ -106,7 +106,7 @@ public class FileSystem extends ParentCommand {
             if (result.exists()) {
                 clone.putMsg("dir is exists!\n$>");
             } else {
-                clone.putMsg(result.createNewFile() ? "ok! \n$>" : "fail! \n$>");
+                clone.putMsg(result.mkdirs() ? "ok! \n$>" : "fail! \n$>");
             }
         } else if (msgStr.matches(rm)) {
             File result = compositingFile(currentPath, msgStr);
