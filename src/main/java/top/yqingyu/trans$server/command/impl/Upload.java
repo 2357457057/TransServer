@@ -6,6 +6,7 @@ import top.yqingyu.common.qymsg.extra.bean.TransObj;
 import top.yqingyu.common.utils.FileUtil;
 import top.yqingyu.common.utils.StringUtil;
 import top.yqingyu.common.utils.VirtualConsoleTable;
+import top.yqingyu.trans$server.annotation.Command;
 import top.yqingyu.trans$server.bean.ClientInfo;
 import top.yqingyu.trans$server.command.ParentCommand;
 import top.yqingyu.trans$server.component.RegistryCenter;
@@ -18,6 +19,7 @@ import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
 
+@Command
 public class Upload extends ParentCommand {
     public Upload() {
         super("upload");

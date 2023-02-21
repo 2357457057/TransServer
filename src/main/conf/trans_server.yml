@@ -7,7 +7,7 @@ server:
   client_response_timeout: 2000
   ac_str: okkkko
   heart_beat: HEART_BEAT
-  heart-beat-percent: 0.99
+  heart-beat-percent: 0
   msg:
     body-length-max: 2048
   CMT:
