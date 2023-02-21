@@ -94,7 +94,7 @@ public class FileSystem extends ParentCommand {
         } else if (msgStr.matches(cd)) {
             File result = compositingFile(currentPath, msgStr);
             if (result.exists()) {
-                clientInfo.setCurrentPath(result.getAbsolutePath());
+                clientInfo.setCurrentPath(result.getAbsolutePath() + separator);
                 clone.putMsg("ok\n$>");
             } else {
                 clone.putMsg("not exists!\n$>");
