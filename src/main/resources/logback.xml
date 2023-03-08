@@ -88,7 +88,7 @@
     </appender>
 
     <logger name="io.netty">
-        <level value="INFO"></level>
+        <level value="INFO"/>
     </logger>
 
     <root>
