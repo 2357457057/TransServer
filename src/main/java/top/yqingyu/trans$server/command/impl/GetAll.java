@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import top.yqingyu.trans$server.annotation.Command;
 import top.yqingyu.trans$server.command.ParentCommand;
 import top.yqingyu.common.qymsg.QyMsg;
-import top.yqingyu.trans$server.thread.DealMsgThread;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -31,7 +30,7 @@ public class GetAll extends ParentCommand {
     protected void deal(ChannelHandlerContext ctx, QyMsg msg, ArrayList<QyMsg> rtnMsg) throws Exception {
         QyMsg clone = NORM_MSG.clone();
         rtnMsg.add(clone);
-        Field commands = DealMsgThread.class.getDeclaredField("COMMANDS");
+        Field commands = ParentCommand.class.getDeclaredField("COMMAND");
         commands.setAccessible(true);
         ArrayList<ParentCommand> o = (ArrayList<ParentCommand>)commands.get(null);
 
