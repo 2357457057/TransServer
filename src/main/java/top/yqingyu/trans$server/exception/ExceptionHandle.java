@@ -3,12 +3,12 @@ package top.yqingyu.trans$server.exception;
 import io.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import top.yqingyu.common.bean.NetChannel;
+import top.yqingyu.common.exception.IllegalQyMsgException;
 import top.yqingyu.common.qymsg.netty.ServerExceptionHandler;
 import top.yqingyu.trans$server.thread.RecordIpThread;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.SocketException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -26,53 +26,45 @@ public class ExceptionHandle implements ServerExceptionHandler {
 
     @Override
     public void handle(ChannelHandlerContext ctx, Throwable cause) {
-        ServerExceptionHandler.super.handle(ctx, cause);
+        String causeMessage = cause.getMessage();
+        if (cause instanceof IllegalQyMsgException) {
+            logger.warn("已知异常 {} ", causeMessage, cause);
+        } else if (cause instanceof SocketException && "Connection reset".equals(causeMessage)) {
+            logger.debug("链接重置 {}", ctx.hashCode());
+        } else {
+            serverExecHandle(cause, ctx);
+        }
     }
 
-    public static void serverExecHandle(Exception e, NetChannel netChannel) {
-
+    public static void serverExecHandle(Throwable e, ChannelHandlerContext ctx) {
         if (e instanceof TimeoutException) {
-            e.addSuppressed(new Exception("客户端响应超时"));
+            e.addSuppressed(new Exception("业务处理超时"));
             logger.error("", e);
             try {
-                InetSocketAddress socketAddress = (InetSocketAddress) netChannel.getRemoteAddress();
+                InetSocketAddress socketAddress = (InetSocketAddress) ctx.channel().remoteAddress();
                 RecordIpThread.execute(socketAddress.getHostString());
             } catch (Exception exx) {
-                serverExecHandle(exx, netChannel);
+                serverExecHandle(exx, ctx);
             }
-            if (netChannel != null) {
-                try {
-                    netChannel.close();
-                } catch (IOException ex) {
-                    logger.error("", ex);
-                }
+            if (ctx != null) {
+                ctx.close();
             }
         } else if (e instanceof ExecutionException) {
-            logger.error("", e);
+            logger.error("线程池异常", e);
             if (e.getMessage().matches(".*(NumberFormatException|Cannot.*Boolean[.]booleanValue).*")) {
                 try {
-                    InetSocketAddress socketAddress = (InetSocketAddress) netChannel.getRemoteAddress();
+                    InetSocketAddress socketAddress = (InetSocketAddress) ctx.channel().remoteAddress();
                     RecordIpThread.execute(socketAddress.getHostString());
                 } catch (Exception exx) {
-                    serverExecHandle(exx, netChannel);
+                    serverExecHandle(exx, ctx);
                 }
             }
-            if (netChannel != null) {
-                try {
-                    netChannel.close();
-                } catch (IOException ex) {
-                    logger.error("", ex);
-                }
+            if (ctx != null) {
+                ctx.close();
             }
         } else if (e != null) {
-            if (netChannel != null) {
-                try {
-                    netChannel.close();
-                } catch (IOException ex) {
-                    logger.error("", ex);
-                }
-            }
-            logger.error("", e);
+
+            logger.error("未知异常 {}", e.getMessage(), e);
         }
     }
 }
