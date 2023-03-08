@@ -18,14 +18,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record UploadThread(String clientId, Socket socket) implements Runnable {
-    public static final ConcurrentDataMap<String, List<TransObj>> CONTAINER_READY = new ConcurrentDataMap<>();
+    public static final ConcurrentDataMap<String, List<TransObj>> UPDATE_READY_CONTAINER = new ConcurrentDataMap<>();
     private static final Logger logger = LoggerFactory.getLogger(UploadThread.class);
 
 
     @Override
     public void run() {
         if (!check()) return;
-        List<TransObj> objList = CONTAINER_READY.remove(clientId);
+        List<TransObj> objList = UPDATE_READY_CONTAINER.remove(clientId);
         TransObj trans;
         int defaultBufSize = 1024 * 8;
         byte[] bytes = new byte[defaultBufSize];
@@ -66,7 +66,7 @@ public record UploadThread(String clientId, Socket socket) implements Runnable {
     }
 
     private boolean check() {
-        if (!CONTAINER_READY.containsKey(clientId)) {
+        if (!UPDATE_READY_CONTAINER.containsKey(clientId)) {
             try {
                 socket.close();
             } catch (IOException e) {

@@ -1,6 +1,7 @@
 package top.yqingyu.trans$server.command.impl;
 
 import com.alibaba.fastjson2.JSONObject;
+import io.netty.channel.ChannelHandlerContext;
 import top.yqingyu.common.annotation.Init;
 import top.yqingyu.common.qymsg.extra.bean.KeyValue;
 import top.yqingyu.common.qymsg.extra.bean.StringKey;
@@ -15,8 +16,6 @@ import top.yqingyu.trans$server.main.MainConfig;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.nio.channels.Selector;
-import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 
 /**
@@ -38,7 +37,7 @@ public class Key extends ParentCommand {
 
 
     @Init
-    public static void init(){
+    public static void init() {
         Field[] dataType = KeyValue.DataType.class.getFields();
         Method[] methods = Key.class.getDeclaredMethods();
 
@@ -65,8 +64,9 @@ public class Key extends ParentCommand {
         }
         ROOT_CONTAINER.put(KeyValue.DataType.STRING, new ConcurrentQyMap<>());
     }
+
     @Override
-    protected void deal(SocketChannel socketChannel, Selector selector, QyMsg msg, ArrayList<QyMsg> rtnMsg) throws Exception {
+    protected void deal(ChannelHandlerContext ctx, QyMsg msg, ArrayList<QyMsg> rtnMsg) throws Exception {
         DataMap map = msg.getDataMap();
         KeyValue key = map.getObject("key", KeyValue.class);
         Method method = DEAL_METHODS.get(key.getDataType());

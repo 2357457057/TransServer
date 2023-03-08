@@ -1,5 +1,6 @@
 package top.yqingyu.trans$server.command.impl;
 
+import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import top.yqingyu.trans$server.annotation.Command;
 import top.yqingyu.trans$server.bean.ClientInfo;
@@ -17,8 +18,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.nio.channels.Selector;
-import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -52,7 +51,7 @@ public class Forward extends ParentCommand {
     private static final ThreadPoolExecutor FORWARD_POOL = ThreadUtil.createQyFixedThreadPool(MainConfig.MAX_REGISTRY_NUM * 3, "Fwd", null);
 
     @Override
-    protected void deal(SocketChannel socketChannel, Selector selector, QyMsg msg, ArrayList<QyMsg> rtnMsg) throws Exception {
+    protected void deal(ChannelHandlerContext ctx, QyMsg msg, ArrayList<QyMsg> rtnMsg) throws Exception {
         StringBuilder sb = new StringBuilder();
         String[] msgSplit = MsgHelper.gainMsg(msg).split(" ");
         if (MsgHelper.gainMsg(msg).matches(commandRegx)) {

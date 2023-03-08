@@ -1,5 +1,6 @@
 package top.yqingyu.trans$server.command.impl;
 
+import io.netty.channel.ChannelHandlerContext;
 import top.yqingyu.common.qydata.DataMap;
 import top.yqingyu.common.qymsg.QyMsg;
 import top.yqingyu.common.qymsg.extra.bean.TransObj;
@@ -14,8 +15,6 @@ import top.yqingyu.trans$server.main.MainConfig;
 import top.yqingyu.trans$server.thread.UploadThread;
 
 import java.io.File;
-import java.nio.channels.Selector;
-import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +25,7 @@ public class Upload extends ParentCommand {
     }
 
     @Override
-    protected void deal(SocketChannel socketChannel, Selector selector, QyMsg msg, ArrayList<QyMsg> rtnMsg) throws Exception {
+    protected void deal(ChannelHandlerContext ctx, QyMsg msg, ArrayList<QyMsg> rtnMsg) throws Exception {
         DataMap dataMap = msg.getDataMap();
         String from = msg.getFrom();
         ClientInfo clientInfo = RegistryCenter.getClientInfo(from);
@@ -77,7 +76,7 @@ public class Upload extends ParentCommand {
         if (isExist.size() != 0 && isExist.size() == list.size())
             return;
 
-        UploadThread.CONTAINER_READY.put(msg.getFrom(), list);
+        UploadThread.UPDATE_READY_CONTAINER.put(msg.getFrom(), list);
         qyMsg.putMsg("ok");
     }
 }

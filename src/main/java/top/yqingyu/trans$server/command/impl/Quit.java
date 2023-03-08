@@ -1,13 +1,12 @@
 package top.yqingyu.trans$server.command.impl;
 
+import io.netty.channel.ChannelHandlerContext;
 import top.yqingyu.trans$server.annotation.Command;
 import top.yqingyu.trans$server.command.ParentCommand;
 import top.yqingyu.common.qymsg.QyMsg;
 import top.yqingyu.trans$server.component.RegistryCenter;
 import top.yqingyu.trans$server.main.MainConfig;
 
-import java.nio.channels.Selector;
-import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 
 /**
@@ -28,7 +27,7 @@ public class Quit extends ParentCommand {
     }
 
     @Override
-    protected  void deal(SocketChannel socketChannel, Selector selector, QyMsg msg, ArrayList<QyMsg> rtnMsg) throws Exception {
+    protected  void deal(ChannelHandlerContext ctx, QyMsg msg, ArrayList<QyMsg> rtnMsg) throws Exception {
 
         StringBuilder sb = new StringBuilder();
             sb.append("bye bye!");

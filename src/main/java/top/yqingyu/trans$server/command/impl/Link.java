@@ -1,6 +1,7 @@
 package top.yqingyu.trans$server.command.impl;
 
 import cn.hutool.core.date.LocalDateTimeUtil;
+import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import top.yqingyu.trans$server.annotation.Command;
 import top.yqingyu.trans$server.bean.ClientInfo;
@@ -11,8 +12,6 @@ import top.yqingyu.common.qymsg.QyMsg;
 import top.yqingyu.trans$server.component.RegistryCenter;
 import top.yqingyu.trans$server.main.MainConfig;
 
-import java.nio.channels.Selector;
-import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.FutureTask;
@@ -37,7 +36,7 @@ public class Link extends ParentCommand {
     }
 
     @Override
-    protected void deal(SocketChannel socketChannel, Selector selector, QyMsg msg, ArrayList<QyMsg> rtnMsg) throws Exception {
+    protected void deal(ChannelHandlerContext ctx, QyMsg msg, ArrayList<QyMsg> rtnMsg) throws Exception {
         StringBuilder sb = new StringBuilder();
 
         if (MsgHelper.gainMsg(msg).matches(commandRegx)) {
