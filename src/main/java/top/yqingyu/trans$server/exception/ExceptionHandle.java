@@ -1,8 +1,10 @@
 package top.yqingyu.trans$server.exception;
 
+import io.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.yqingyu.common.bean.NetChannel;
+import top.yqingyu.common.qymsg.netty.ServerExceptionHandler;
 import top.yqingyu.trans$server.thread.RecordIpThread;
 
 import java.io.IOException;
@@ -17,9 +19,15 @@ import java.util.concurrent.TimeoutException;
  * @description
  * @createTime 2023年02月21日 22:22:00
  */
-public class ExceptionHandle {
+public class ExceptionHandle implements ServerExceptionHandler {
 
     private final static Logger logger = LoggerFactory.getLogger(ExceptionHandle.class);
+
+
+    @Override
+    public void handle(ChannelHandlerContext ctx, Throwable cause) {
+        ServerExceptionHandler.super.handle(ctx, cause);
+    }
 
     public static void serverExecHandle(Exception e, NetChannel netChannel) {
 

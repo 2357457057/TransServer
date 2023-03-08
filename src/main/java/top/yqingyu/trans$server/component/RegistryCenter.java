@@ -1,6 +1,8 @@
 package top.yqingyu.trans$server.component;
 
 
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.yqingyu.trans$server.bean.ClientInfo;
@@ -11,6 +13,7 @@ import top.yqingyu.trans$server.main.MainConfig;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
@@ -30,12 +33,12 @@ public class RegistryCenter {
     private static final Logger logger = LoggerFactory.getLogger(RegistryCenter.class);
 
 
-    public static boolean registrationClient(SocketChannel socketChannel, Selector selector, QyMsg msgHeader) throws CloneNotSupportedException {
+    public static boolean registrationClient(ChannelHandlerContext ctx, QyMsg msgHeader) throws CloneNotSupportedException {
         QyMsg clone = MainConfig.NORM_MSG.clone();
         try {
 
-
-            InetSocketAddress socketAddress = (InetSocketAddress) socketChannel.getRemoteAddress();
+            Channel channel = ctx.channel();
+            InetSocketAddress socketAddress = (InetSocketAddress) channel.remoteAddress();
 
 
             if (REGISTRY_CENTER.size() < MainConfig.MAX_REGISTRY_NUM) {
@@ -43,7 +46,7 @@ public class RegistryCenter {
 
                 ClientInfo clientInfo = new ClientInfo();
                 clientInfo.setClientId(msgHeader.getFrom());
-                clientInfo.setSocketChannel(socketChannel);
+                clientInfo.setCtx(ctx);
                 clientInfo.setLocalDateTime(LocalDateTime.now());
                 clientInfo.setWAN_Address(socketAddress.getHostString());
                 clientInfo.setLAN_Address(LAN_Address);
@@ -52,12 +55,10 @@ public class RegistryCenter {
                 REGISTRY_CENTER.put(msgHeader.getFrom(), clientInfo);
                 return true;
             } else {
-                socketChannel.register(selector, SelectionKey.OP_WRITE);
-
-                clone = MainConfig.ERR_MSG.clone();
-                clone.putMsg("客户端连接数已达最大值，将会关闭本次链接，请稍后再试！");
-                MsgTransfer.writeQyMsg(socketChannel, clone);
-                socketChannel.close();
+//                clone = MainConfig.ERR_MSG.clone();
+//                clone.putMsg("客户端连接数已达最大值，将会关闭本次链接，请稍后再试！");
+//                MsgTransfer.writeQyMsg(socketChannel, clone);
+                ctx.close();
                 return false;
             }
         } catch (Exception e) {
@@ -69,9 +70,7 @@ public class RegistryCenter {
 
 
     public static void removeClient(String userId) throws IOException {
-        SocketChannel remove = REGISTRY_CENTER.remove(userId).getSocketChannel();
-        remove.shutdownInput();
-        remove.shutdownOutput();
+        Channel remove = REGISTRY_CENTER.remove(userId).getCtx().channel();
         remove.close();
 
     }

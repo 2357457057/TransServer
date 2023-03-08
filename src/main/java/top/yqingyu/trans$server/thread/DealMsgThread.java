@@ -1,29 +1,28 @@
 package top.yqingyu.trans$server.thread;
 
+import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import top.yqingyu.trans$server.bean.ClientInfo;
 import top.yqingyu.trans$server.command.ParentCommand;
 import top.yqingyu.common.qydata.DataMap;
 import top.yqingyu.common.qymsg.MsgHelper;
-import top.yqingyu.common.qymsg.MsgTransfer;
 import top.yqingyu.common.qymsg.MsgType;
 import top.yqingyu.common.qymsg.QyMsg;
 import top.yqingyu.trans$server.component.RegistryCenter;
 import top.yqingyu.trans$server.main.S$CtConfig;
 import top.yqingyu.trans$server.main.MainConfig;
 
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
+
 import static top.yqingyu.trans$server.command.ParentCommand.COMMAND;
 
 
 @SuppressWarnings("all")
 @Slf4j
-public record DealMsgThread(SocketChannel socketChannel, Selector selector) {
+public class DealMsgThread {
 
-    public void deal(QyMsg qyMsg) throws Exception {
+    public QyMsg deal(ChannelHandlerContext ctx, QyMsg qyMsg) throws Exception {
 
         log.info("DEAL> {}", qyMsg.toString());
         AtomicReference<ParentCommand> a = new AtomicReference<>();
@@ -46,27 +45,20 @@ public record DealMsgThread(SocketChannel socketChannel, Selector selector) {
         if (a.get() != null) {
             try {
                 ParentCommand parentCommand = a.get();
-                parentCommand.dealCommand(this.socketChannel, this.selector, qyMsg);
+                ArrayList<QyMsg> qyMsgs = parentCommand.dealCommand(ctx, qyMsg);
                 log.info("执行类: {}", parentCommand.getClass().getSimpleName());
+                return qyMsgs.get(0);
             } catch (Exception e) {
-                this.socketChannel.register(this.selector, SelectionKey.OP_WRITE);
-
                 clone = MainConfig.ERR_MSG.clone();
                 clone.putMsg("error\n$>");
-
-                MsgTransfer.writeQyMsg(this.socketChannel, clone);
-                this.socketChannel.register(this.selector, SelectionKey.OP_READ);
                 log.error("命令处理异常", e);
-                throw e;
+                return clone;
             }
         } else {
             try {
-                this.socketChannel.register(this.selector, SelectionKey.OP_WRITE);
-
                 clone = MainConfig.NORM_MSG.clone();
                 clone.putMsg("\n$>");
-                MsgTransfer.writeQyMsg(this.socketChannel, clone);
-                this.socketChannel.register(this.selector, SelectionKey.OP_READ);
+                return clone;
             } catch (Exception e) {
                 log.error("命令处理异常", e);
                 throw e;
@@ -75,10 +67,7 @@ public record DealMsgThread(SocketChannel socketChannel, Selector selector) {
 
     }
 
-    public void deal2(QyMsg msg) throws Exception {
-
-        socketChannel.register(selector, SelectionKey.OP_WRITE);
-
+    public QyMsg deal2(ChannelHandlerContext ctx, QyMsg msg) throws Exception {
 
         ClientInfo clientInfo = RegistryCenter.getClientInfo(msg.getFrom());
 
@@ -98,7 +87,7 @@ public record DealMsgThread(SocketChannel socketChannel, Selector selector) {
             peek.remove("MSG_IN");
             peek.put("MSG", "link");
 
-            MsgTransfer.writeQyMsg(socketChannel, clone);  //告知客户端连接服务器
+            return clone;  //告知客户端连接服务器
 
         } else if (peek != null && "forward".equals(peek.getString("MSG_IN", ""))) {
             clientInfo.getClientInteractionQueue().poll();
@@ -111,7 +100,7 @@ public record DealMsgThread(SocketChannel socketChannel, Selector selector) {
             peek.put("MSG", "forward");
             clone.setDataMap(peek);
 
-            MsgTransfer.writeQyMsg(socketChannel, clone);
+            return clone;
 
         } else { //无队列消息处理
 
@@ -119,7 +108,7 @@ public record DealMsgThread(SocketChannel socketChannel, Selector selector) {
 
                 QyMsg clone = S$CtConfig.HEART_BEAT_MSG.clone();
                 clone.putMsg(MainConfig.HEART_BEAT);
-                MsgTransfer.writeQyMsg(socketChannel, clone);
+                return clone;
 
             } else if ("linked".equals(MsgHelper.gainMsg(msg))) {
 
@@ -131,20 +120,12 @@ public record DealMsgThread(SocketChannel socketChannel, Selector selector) {
 
                 QyMsg clone = S$CtConfig.HEART_BEAT_MSG.clone();
                 clone.putMsg(MainConfig.HEART_BEAT);
-                MsgTransfer.writeQyMsg(socketChannel, clone);
+                return clone;
 
             }
 
-
         }
-        socketChannel.register(selector, SelectionKey.OP_READ);
+        return null;
     }
 
-    public SocketChannel socketChannel() {
-        return this.socketChannel;
-    }
-
-    public Selector selector() {
-        return this.selector;
-    }
 }

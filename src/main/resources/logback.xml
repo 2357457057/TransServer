@@ -15,8 +15,10 @@
     <property name="log.level" value="debug"/>
     <property name="log.maxHistory" value="30"/>
     <property name="log.filePath" value="./logs"/>
-    <property name="log.color" value="%boldGreen([%date{yyyy-MM-dd HH:mm:ss.SSS}]) %highlight([%-5level]) %boldYellow([%20.20thread]) %cyan(%-30.30logger{30}[%-5.5L{5}]) -> %gray(%msg%n)"/>
-    <property name="log.pattern" value="[%date{yyyy-MM-dd HH:mm:ss.SSS}] [%-5level] [%20.20thread] %-30.30logger{30} [%-5.5L{5}] -> %msg%n"/>
+    <property name="log.color"
+              value="%boldGreen([%date{yyyy-MM-dd HH:mm:ss.SSS}]) %highlight([%-5level]) %boldYellow([%20.20thread]) %cyan(%-30.30logger{30}[%-5.5L{5}]) -> %gray(%msg%n)"/>
+    <property name="log.pattern"
+              value="[%date{yyyy-MM-dd HH:mm:ss.SSS}] [%-5level] [%20.20thread] %-30.30logger{30} [%-5.5L{5}] -> %msg%n"/>
     <statusListener class="NopStatusListener"/>
 
     <appender name="consoleAppender" class="ConsoleAppender">
@@ -84,6 +86,10 @@
             <onMismatch>DENY</onMismatch>
         </filter>
     </appender>
+
+    <logger name="io.netty">
+        <level value="INFO"></level>
+    </logger>
 
     <root>
         <appender-ref ref="debugAppender"/>

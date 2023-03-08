@@ -1,5 +1,6 @@
 package top.yqingyu.trans$server.command.impl;
 
+import io.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.yqingyu.common.qymsg.DataType;
@@ -16,8 +17,6 @@ import top.yqingyu.trans$server.component.RegistryCenter;
 import top.yqingyu.trans$server.main.MainConfig;
 
 import java.io.File;
-import java.nio.channels.Selector;
-import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -41,7 +40,7 @@ public class FileSystem extends ParentCommand {
     }
 
     @Override
-    protected void deal(SocketChannel socketChannel, Selector selector, QyMsg msg, ArrayList<QyMsg> rtnMsg) throws Exception {
+    protected void deal(ChannelHandlerContext ctx, QyMsg msg, ArrayList<QyMsg> rtnMsg) throws Exception {
         String id = msg.getFrom();
         ClientInfo clientInfo = RegistryCenter.getClientInfo(id);
         String msgStr = MsgHelper.gainMsg(msg).trim();

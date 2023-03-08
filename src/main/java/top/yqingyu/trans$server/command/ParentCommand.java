@@ -1,17 +1,14 @@
 package top.yqingyu.trans$server.command;
 
+import io.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.yqingyu.common.annotation.Init;
-import top.yqingyu.common.qymsg.MsgTransfer;
 import top.yqingyu.common.qymsg.QyMsg;
 import top.yqingyu.common.utils.ClazzUtil;
 import top.yqingyu.trans$server.annotation.Command;
 
 import java.lang.reflect.Constructor;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,30 +56,17 @@ public class ParentCommand {
     }
 
 
-    public final void dealCommand(SocketChannel socketChannel, Selector selector, QyMsg msg) throws Exception {
+    public final ArrayList<QyMsg> dealCommand(ChannelHandlerContext ctx, QyMsg msg) throws Exception {
         ArrayList<QyMsg> rtnMsg = new ArrayList<>(1);
-        socketChannel.register(selector, SelectionKey.OP_WRITE);
-        deal(socketChannel, selector, msg, rtnMsg);
+        deal(ctx, msg, rtnMsg);
         addMsgId(rtnMsg, msg);
-        writeMsg(socketChannel, rtnMsg);
-        socketChannel.register(selector, SelectionKey.OP_READ);
+        return rtnMsg;
     }
 
-    protected void deal(SocketChannel socketChannel, Selector selector, QyMsg msg, ArrayList<QyMsg> rtnMsg) throws Exception {
+    protected void deal(ChannelHandlerContext ctx, QyMsg msg, ArrayList<QyMsg> rtnMsg) throws Exception {
         QyMsg clone = NORM_MSG.clone();
         clone.putMsg("\n$>");
         rtnMsg.add(clone);
-    }
-
-    /**
-     * 向外写出消息 可选择重写
-     *
-     * @description
-     */
-    public void writeMsg(SocketChannel socketChannel, List<QyMsg> msgList) throws Exception {
-        for (QyMsg msg : msgList) {
-            MsgTransfer.writeQyMsg(socketChannel, msg);
-        }
     }
 
     public final boolean isMatch(String command) {

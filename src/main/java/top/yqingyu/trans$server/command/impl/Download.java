@@ -1,5 +1,6 @@
 package top.yqingyu.trans$server.command.impl;
 
+import io.netty.channel.ChannelHandlerContext;
 import top.yqingyu.common.qymsg.QyMsg;
 import top.yqingyu.trans$server.annotation.Command;
 import top.yqingyu.trans$server.command.ParentCommand;
@@ -15,7 +16,7 @@ public class Download extends ParentCommand {
     }
 
     @Override
-    protected void deal(SocketChannel socketChannel, Selector selector, QyMsg msg, ArrayList<QyMsg> rtnMsg) throws Exception {
+    protected void deal(ChannelHandlerContext ctx, QyMsg msg, ArrayList<QyMsg> rtnMsg) throws Exception {
 
     }
 }

@@ -1,5 +1,6 @@
 package top.yqingyu.trans$server.command.impl;
 
+import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import top.yqingyu.trans$server.annotation.Command;
 import top.yqingyu.trans$server.command.ParentCommand;
@@ -7,8 +8,6 @@ import top.yqingyu.common.qymsg.QyMsg;
 import top.yqingyu.trans$server.thread.DealMsgThread;
 
 import java.lang.reflect.Field;
-import java.nio.channels.Selector;
-import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import static top.yqingyu.trans$server.main.MainConfig.*;
 
@@ -29,7 +28,7 @@ public class GetAll extends ParentCommand {
     }
 
     @Override
-    protected void deal(SocketChannel socketChannel, Selector selector, QyMsg msg, ArrayList<QyMsg> rtnMsg) throws Exception {
+    protected void deal(ChannelHandlerContext ctx, QyMsg msg, ArrayList<QyMsg> rtnMsg) throws Exception {
         QyMsg clone = NORM_MSG.clone();
         rtnMsg.add(clone);
         Field commands = DealMsgThread.class.getDeclaredField("COMMANDS");

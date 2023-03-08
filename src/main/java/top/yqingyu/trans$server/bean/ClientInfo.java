@@ -2,6 +2,7 @@ package top.yqingyu.trans$server.bean;
 
 
 import com.alibaba.fastjson2.JSON;
+import io.netty.channel.ChannelHandlerContext;
 import top.yqingyu.common.qydata.DataMap;
 
 import java.io.Serializable;
@@ -20,7 +21,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class ClientInfo implements Serializable {
 
     private String clientId;
-    private SocketChannel socketChannel;
+    private ChannelHandlerContext ctx;
 
     //心跳时间
     private LocalDateTime localDateTime;
@@ -46,9 +47,9 @@ public class ClientInfo implements Serializable {
     public ClientInfo() {
     }
 
-    public ClientInfo(String clientId, SocketChannel socketChannel, LocalDateTime localDateTime, String WAN_Address, String LAN_Address) {
+    public ClientInfo(String clientId, ChannelHandlerContext ctx, LocalDateTime localDateTime, String WAN_Address, String LAN_Address) {
         this.clientId = clientId;
-        this.socketChannel = socketChannel;
+        this.ctx = ctx;
         this.localDateTime = localDateTime;
         this.WAN_Address = WAN_Address;
         this.LAN_Address = LAN_Address;
@@ -63,12 +64,12 @@ public class ClientInfo implements Serializable {
         this.clientId = clientId;
     }
 
-    public SocketChannel getSocketChannel() {
-        return socketChannel;
+    public ChannelHandlerContext getCtx() {
+        return ctx;
     }
 
-    public void setSocketChannel(SocketChannel socketChannel) {
-        this.socketChannel = socketChannel;
+    public void setCtx(ChannelHandlerContext ctx) {
+        this.ctx = ctx;
     }
 
     public LocalDateTime getLocalDateTime() {
