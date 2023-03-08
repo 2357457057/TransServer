@@ -34,8 +34,7 @@ public class Start {
         log.info("init Transfer");
         MsgTransfer.init(
                 32,
-                MainConfig.MSG_BODY_LENGTH_MAX,
-                ThreadUtil.createQyFixedThreadPool(Runtime.getRuntime().availableProcessors() * 3, "transPool", null)
+                MainConfig.MSG_BODY_LENGTH_MAX
         );
         log.info("starting main server");
         InitUtil.init("top.yqingyu.trans$server");
@@ -52,7 +51,7 @@ public class Start {
         CreateServer
                 .createDefault("S$Ct")
                 .implEvent(S$CtEventHandler.class)
-                .defaultFixRouter(8,4)
+                .defaultFixRouter(8, 4)
                 .listenPort(MainConfig.PORT_INTER)
                 .start();
 

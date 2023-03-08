@@ -59,7 +59,7 @@ public record UploadThread(String clientId, Socket socket) implements Runnable {
                 writeChannel.close();
                 logger.info("文件上传成功 {} cost:{}ms", file.getAbsolutePath(), LocalDateTimeUtil.between(now, LocalDateTime.now()));
             } catch (IOException e) {
-                logger.error("", e);
+                logger.error("传输发生异常 尝试删除文件 {} ", file.delete(), e);
             }
             bytes = new byte[defaultBufSize];
         } while (trans.isHasNext());
