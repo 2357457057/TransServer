@@ -10,6 +10,7 @@ import top.yqingyu.common.utils.YamlUtil;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author YYJ
@@ -32,7 +33,10 @@ public class MainConfig {
     public final static int MSG_TIMEOUT = SERVER_CONF.getIntValue("msg_timeout");
     public static final int MAX_REGISTRY_NUM = SERVER_CONF.getIntValue("max_registry_num"); //客户端最大数量
     public static final int CLIENT_RESPONSE_TIMEOUT = SERVER_CONF.getIntValue("client_response_timeout"); //客户端响应最大时间
-
+    public static final long CMT_POLLING_INTERVAL  = SERVER_CONF.getData("CMT").getLongValue("period"); //客户端监控线程扫描间隔
+    public static final long CMT_INIT_TIME  = SERVER_CONF.getData("CMT").getLongValue("init"); //客户端监控线程初始时间
+    public static final TimeUnit CMT_TIME_UNIT  = SERVER_CONF.getData("CMT").getTimeUnit("unit"); //客户端监控线程时间配置时间单位
+    public static final long CLIENT_ALIVE_SCAN_TIME = SERVER_CONF.getData("CMT").getLongValue("timeout"); //客户端掉线时间。
     public static final int MSG_BODY_LENGTH_MAX = SERVER_CONF.getData("msg").getIntValue("body-length-max"); //客户端每条消息最大值 超过将会拆分。
 
 

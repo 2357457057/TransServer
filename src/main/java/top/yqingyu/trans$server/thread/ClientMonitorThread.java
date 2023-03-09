@@ -14,6 +14,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
+import static top.yqingyu.trans$server.main.MainConfig.*;
+
 
 /**
  * @author YYJ
@@ -29,12 +31,9 @@ public class ClientMonitorThread implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(ClientMonitorThread.class);
 
     public static void init() {
-
-        DataMap cfg = MainConfig.SERVER_CONF.getData("CMT");
-
         ScheduledExecutorService service = Executors
                 .newSingleThreadScheduledExecutor();
-        service.scheduleAtFixedRate(new ClientMonitorThread(),cfg.getIntValue("init") , cfg.getIntValue("period"), cfg.getTimeUnit("unit"));
+        service.scheduleAtFixedRate(new ClientMonitorThread(), CMT_INIT_TIME, CMT_POLLING_INTERVAL, CMT_TIME_UNIT);
         log.info("heart beat timeout thread ok");
     }
 
@@ -50,7 +49,7 @@ public class ClientMonitorThread implements Runnable {
 
             long subTime = LocalDateTimeUtil.between(localDateTime, now, ChronoUnit.MILLIS);
 
-            if (subTime > MainConfig.SERVER_CONF.getData("CMT").getIntValue("timeout")) {
+            if (subTime > CLIENT_ALIVE_SCAN_TIME) {
                 RegistryCenter.REGISTRY_CENTER.remove(clientId);
                 logger.info("检测到客户端【{}】心跳检测超时，超时时间{},WAN：{},LAN：{}", clientId, subTime, clientInfo.getWAN_Address(), clientInfo.getLAN_Address());
             }

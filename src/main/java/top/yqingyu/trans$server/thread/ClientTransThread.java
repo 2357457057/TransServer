@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Slf4j
 public record ClientTransThread(Socket socket) implements Runnable, Callable<Boolean> {
 
-    public static final ThreadPoolExecutor POOL = ThreadUtil.createQyFixedThreadPool(MainConfig.MAX_REGISTRY_NUM * 2, "Csc", null);
+    public static final ThreadPoolExecutor POOL = ThreadUtil.createQyFixedThreadPool(128, MainConfig.MAX_REGISTRY_NUM * 2, MainConfig.CLIENT_ALIVE_SCAN_TIME, "Csc", null);
     public static final ConcurrentHashMap<String, Socket> CLIENT_TRANS_POOL = new ConcurrentHashMap<>();
 
 
