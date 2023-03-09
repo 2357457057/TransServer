@@ -28,6 +28,7 @@ public class ExceptionHandle implements ServerExceptionHandler {
     public void handle(ChannelHandlerContext ctx, Throwable cause) {
         String causeMessage = cause.getMessage();
         if (cause instanceof IllegalQyMsgException) {
+            RecordIpThread.execute(((InetSocketAddress) ctx.channel().remoteAddress()).getHostString());
             logger.warn("已知异常 {} ", causeMessage, cause);
         } else if (cause instanceof SocketException && "Connection reset".equals(causeMessage)) {
             logger.debug("链接重置 {}", ctx.hashCode());
