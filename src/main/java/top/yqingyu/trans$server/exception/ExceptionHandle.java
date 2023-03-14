@@ -1,6 +1,7 @@
 package top.yqingyu.trans$server.exception;
 
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.DecoderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.yqingyu.common.exception.IllegalQyMsgException;
@@ -32,6 +33,10 @@ public class ExceptionHandle implements ServerExceptionHandler {
             logger.warn("已知异常 {} ", causeMessage, cause);
         } else if (cause instanceof SocketException && "Connection reset".equals(causeMessage)) {
             logger.debug("链接重置 {}", ctx.hashCode());
+        } else if (cause instanceof DecoderException) {
+            RecordIpThread.execute(((InetSocketAddress) ctx.channel().remoteAddress()).getHostString());
+            logger.warn("已知异常 {} ", causeMessage, cause);
+            ctx.close();
         } else {
             serverExecHandle(cause, ctx);
         }
