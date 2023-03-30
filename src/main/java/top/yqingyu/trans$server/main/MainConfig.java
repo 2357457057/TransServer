@@ -43,7 +43,7 @@ public class MainConfig {
     public static final ExecutorService MSG_POOL = ThreadUtil.createQyFixedThreadPool(MAX_REGISTRY_NUM * 2, "Msg", null);
 
     public static final QyMsg HEART_BEAT_MSG = new QyMsg(MsgType.HEART_BEAT, DataType.STRING);
-    public static final QyMsg NORM_MSG = new QyMsg(MsgType.NORM_MSG, DataType.JSON);
+    public static final QyMsg NORM_MSG = new QyMsg(MsgType.NORM_MSG, DataType.OBJECT);
     public static final QyMsg AC_MSG = new QyMsg(MsgType.AC, DataType.JSON);
     public static final QyMsg ERR_MSG = new QyMsg(MsgType.ERR_MSG, DataType.JSON);
 
