@@ -14,7 +14,7 @@
 //import top.yqingyu.trans$server.component.RegistryCenter;
 //import top.yqingyu.trans$server.exception.ExceptionHandle;
 //import top.yqingyu.trans$server.main.MainConfig;
-//import top.yqingyu.trans$server.thread.DealMsgThread;
+//import top.yqingyu.trans$server.thread.DealMsg;
 //import top.yqingyu.trans$server.thread.RecordIpThread;
 //import top.yqingyu.trans$server.thread.ClientTransThread;
 //
@@ -70,7 +70,7 @@
 //                        if (MsgType.HEART_BEAT == type) {
 //                            log.debug("{}", thisMsg);
 //                        } else {
-//                            new DealMsgThread(netChannel.getNChannel(), selector).deal(thisMsg);
+//                            new DealMsg(netChannel.getNChannel(), selector).deal(thisMsg);
 //                            LocalDateTime now2 = LocalDateTime.now();
 //                            long nanos = LocalDateTimeUtil.between(now1, now2, ChronoUnit.MILLIS);
 //                            log.info("命令执行完成：{}  | {}ms", MsgHelper.gainMsg(thisMsg), nanos);

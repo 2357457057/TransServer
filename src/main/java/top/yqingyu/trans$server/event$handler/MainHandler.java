@@ -12,7 +12,7 @@ import top.yqingyu.common.utils.ThreadUtil;
 import top.yqingyu.trans$server.component.RegistryCenter;
 import top.yqingyu.trans$server.main.MainConfig;
 import top.yqingyu.trans$server.thread.ClientTransThread;
-import top.yqingyu.trans$server.thread.DealMsgThread;
+import top.yqingyu.trans$server.thread.DealMsg;
 
 import java.net.InetSocketAddress;
 import java.time.LocalDateTime;
@@ -36,10 +36,9 @@ public class MainHandler extends QyMsgServerHandler {
 
             if (RegistryCenter.isRegistered(msg.getFrom())) {
                 if (MsgType.HEART_BEAT == type) {
-                    log.debug("{}", msg);
                     return null;
                 } else {
-                    return new DealMsgThread().deal(ctx, msg);
+                    return new DealMsg().deal(ctx, msg);
                 }
             } else {
                 if (MsgType.AC == type && MainConfig.AC_STR.equals(MsgHelper.gainMsgValue(msg, "AC_STR"))) {
@@ -49,7 +48,6 @@ public class MainHandler extends QyMsgServerHandler {
                         log.info("{}: {}", MainConfig.AC_STR, msg);
                         return clone;
                     }
-                    return null;
                 } else {
                     InetSocketAddress remoteAddress = (InetSocketAddress) ctx.channel().remoteAddress();
                     log.info("未注册的消息关闭连接{}:{} {} ", remoteAddress.getHostString(), remoteAddress.getPort(), msg);
@@ -57,8 +55,8 @@ public class MainHandler extends QyMsgServerHandler {
 //                        clone.putMsg("注册中心无此id");
 //                        MsgTransfer.writeQyMsg(netChannel.getNChannel(), clone);
                     ctx.close();
-                    return null;
                 }
+                return null;
             }
         });
         ClientTransThread.POOL.execute(futureTask);
