@@ -33,26 +33,28 @@ public class RegistryCenter {
     private static final Logger logger = LoggerFactory.getLogger(RegistryCenter.class);
 
 
-    public static boolean registrationClient(ChannelHandlerContext ctx, QyMsg msgHeader) throws CloneNotSupportedException {
+    public static boolean registrationClient(ChannelHandlerContext ctx, QyMsg msg) throws CloneNotSupportedException {
         QyMsg clone = MainConfig.NORM_MSG.clone();
         try {
 
             Channel channel = ctx.channel();
             InetSocketAddress socketAddress = (InetSocketAddress) channel.remoteAddress();
-
+            if (!MainConfig.AC_STR.equals(MsgHelper.gainMsgValue(msg, "AC_STR"))) {
+                return false;
+            }
 
             if (REGISTRY_CENTER.size() < MainConfig.MAX_REGISTRY_NUM) {
-                String LAN_Address = MsgHelper.gainMsgValue(msgHeader, "LAN_Address");
+                String LAN_Address = MsgHelper.gainMsgValue(msg, "LAN_Address");
 
                 ClientInfo clientInfo = new ClientInfo();
-                clientInfo.setClientId(msgHeader.getFrom());
+                clientInfo.setClientId(msg.getFrom());
                 clientInfo.setCtx(ctx);
                 clientInfo.setLocalDateTime(LocalDateTime.now());
                 clientInfo.setWAN_Address(socketAddress.getHostString());
                 clientInfo.setLAN_Address(LAN_Address);
 
 
-                REGISTRY_CENTER.put(msgHeader.getFrom(), clientInfo);
+                REGISTRY_CENTER.put(msg.getFrom(), clientInfo);
                 return true;
             } else {
 //                clone = MainConfig.ERR_MSG.clone();
