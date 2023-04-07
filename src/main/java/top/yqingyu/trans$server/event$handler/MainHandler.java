@@ -12,7 +12,7 @@ import top.yqingyu.common.utils.ThreadUtil;
 import top.yqingyu.trans$server.component.RegistryCenter;
 import top.yqingyu.trans$server.main.MainConfig;
 import top.yqingyu.trans$server.thread.ClientTransThread;
-import top.yqingyu.trans$server.thread.DealMsgThread;
+import top.yqingyu.trans$server.thread.DealMsg;
 
 import java.net.InetSocketAddress;
 import java.time.LocalDateTime;
@@ -34,39 +34,32 @@ public class MainHandler extends QyMsgServerHandler {
             MsgType type = msg.getMsgType();
             QyMsg clone;
 
-            switch (type) {
-                case NORM_MSG -> {
-                    if (RegistryCenter.isRegistered(msg.getFrom())) {
-                        return new DealMsgThread().deal(ctx, msg);
-                    } else {
-                        InetSocketAddress remoteAddress = (InetSocketAddress) ctx.channel().remoteAddress();
-                        log.info("未注册的消息关闭连接{}:{} {} ", remoteAddress.getHostString(), remoteAddress.getPort(), msg);
-                        ctx.close();
-                    }
+            if (RegistryCenter.isRegistered(msg.getFrom())) {
+                if (MsgType.HEART_BEAT == type) {
+                    log.debug("{}", msg);
+                    return null;
+                } else {
+                    return new DealMsgThread().deal(ctx, msg);
                 }
-                case HEART_BEAT -> {
-                    if (RegistryCenter.isRegistered(msg.getFrom())) {
-                        log.debug("{}", msg);
-                        return null;
-                    } else {
-                        InetSocketAddress remoteAddress = (InetSocketAddress) ctx.channel().remoteAddress();
-                        log.info("未注册的消息关闭连接{}:{} {} ", remoteAddress.getHostString(), remoteAddress.getPort(), msg);
-                        ctx.close();
-                    }
-                }
-                case AC -> {
+            } else {
+                if (MsgType.AC == type && MainConfig.AC_STR.equals(MsgHelper.gainMsgValue(msg, "AC_STR"))) {
                     if (RegistryCenter.registrationClient(ctx, msg)) {
                         clone = MainConfig.AC_MSG.clone();
                         clone.putMsg(MainConfig.AC_STR);
                         log.info("{}: {}", MainConfig.AC_STR, msg);
                         return clone;
                     }
-                }
-                default -> {
+                    return null;
+                } else {
+                    InetSocketAddress remoteAddress = (InetSocketAddress) ctx.channel().remoteAddress();
+                    log.info("未注册的消息关闭连接{}:{} {} ", remoteAddress.getHostString(), remoteAddress.getPort(), msg);
+//                        clone = MainConfig.ERR_MSG.clone();
+//                        clone.putMsg("注册中心无此id");
+//                        MsgTransfer.writeQyMsg(netChannel.getNChannel(), clone);
+                    ctx.close();
                     return null;
                 }
             }
-            return null;
         });
         ClientTransThread.POOL.execute(futureTask);
         QyMsg rtnMsg = futureTask.get(MainConfig.CLIENT_RESPONSE_TIMEOUT, TimeUnit.MILLISECONDS);

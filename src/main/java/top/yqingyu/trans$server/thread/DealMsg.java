@@ -20,7 +20,7 @@ import static top.yqingyu.trans$server.command.ParentCommand.COMMAND;
 
 @SuppressWarnings("all")
 @Slf4j
-public class DealMsgThread {
+public class DealMsg {
 
     public QyMsg deal(ChannelHandlerContext ctx, QyMsg qyMsg) throws Exception {
 

@@ -9,7 +9,7 @@ import top.yqingyu.common.utils.ThreadUtil;
 import top.yqingyu.trans$server.component.RegistryCenter;
 import top.yqingyu.trans$server.main.MainConfig;
 import top.yqingyu.trans$server.thread.ClientTransThread;
-import top.yqingyu.trans$server.thread.DealMsgThread;
+import top.yqingyu.trans$server.thread.DealMsg;
 import top.yqingyu.trans$server.thread.RecordIpThread;
 
 import java.net.InetSocketAddress;
@@ -28,7 +28,7 @@ public class S2CtHandler extends QyMsgServerHandler {
             ThreadUtil.setThisThreadName(name);
             if (RegistryCenter.isRegistered(msg.getFrom())) {
                 log.debug("{}", msg);
-                return new DealMsgThread().deal2(ctx, msg);
+                return new DealMsg().deal2(ctx, msg);
 
             } else {
                 InetSocketAddress socketAddress = (InetSocketAddress) ctx.channel().remoteAddress();
