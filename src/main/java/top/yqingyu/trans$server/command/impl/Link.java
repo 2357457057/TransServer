@@ -1,8 +1,8 @@
 package top.yqingyu.trans$server.command.impl;
 
-import cn.hutool.core.date.LocalDateTimeUtil;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
+import top.yqingyu.common.utils.LocalDateTimeUtil;
 import top.yqingyu.trans$server.annotation.Command;
 import top.yqingyu.trans$server.bean.ClientInfo;
 import top.yqingyu.trans$server.command.ParentCommand;
@@ -60,7 +60,7 @@ public class Link extends ParentCommand {
                             sb.append("\t");
                             sb.append(clientInfo.getLAN_Address());
                             sb.append("\t");
-                            sb.append(LocalDateTimeUtil.format(clientInfo.getLocalDateTime(), "yyyy-MM-dd HH:mm:ss.SSS"));
+                            sb.append(LocalDateTimeUtil.format("yyyy-MM-dd HH:mm:ss.SSS", clientInfo.getLocalDateTime()));
                             sb.append("\n");
                         });
                     }

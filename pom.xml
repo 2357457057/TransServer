@@ -11,7 +11,7 @@
     </parent>
 
     <name>TransServer</name>
-    <version>${parent.version}</version>
+    <version>1.9.2</version>
     <artifactId>TransServer</artifactId>
 
 

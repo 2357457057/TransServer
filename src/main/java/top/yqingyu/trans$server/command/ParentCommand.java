@@ -17,9 +17,7 @@ import static top.yqingyu.trans$server.main.MainConfig.*;
 /**
  * @author YYJ
  * @version 1.0.0
- * @date 2022/4/23 22:44
  * @description 所有的命令都必须实现本接口
- * @modified by
  */
 @Command
 public class ParentCommand {
@@ -45,6 +43,7 @@ public class ParentCommand {
             for (Class<?> clazz : classList) {
                 Constructor<?>[] constructors = clazz.getConstructors();
                 if (constructors.length < 1) continue;
+                @SuppressWarnings("unchecked")
                 Constructor<ParentCommand> constructor = (Constructor<ParentCommand>) clazz.getConstructor();
                 ParentCommand parentCommand = constructor.newInstance();
                 COMMAND.add(parentCommand);

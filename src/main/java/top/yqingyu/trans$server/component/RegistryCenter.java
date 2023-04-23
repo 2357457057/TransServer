@@ -7,25 +7,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.yqingyu.trans$server.bean.ClientInfo;
 import top.yqingyu.common.qymsg.MsgHelper;
-import top.yqingyu.common.qymsg.MsgTransfer;
 import top.yqingyu.common.qymsg.QyMsg;
 import top.yqingyu.trans$server.main.MainConfig;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.SocketChannel;
 import java.time.LocalDateTime;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author YYJ
  * @version 1.0.0
- * @date 2022/4/22 3:14
  * @description 客户端注册中心
- * @modified by
  */
 public class RegistryCenter {
 
