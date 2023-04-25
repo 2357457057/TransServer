@@ -1,13 +1,15 @@
-package top.yqingyu.trans$server.thread;
+package top.yqingyu.trans$server.trans;
 
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import top.yqingyu.common.qymsg.MsgHelper;
 import top.yqingyu.common.qymsg.MsgTransfer;
 import top.yqingyu.common.qymsg.QyMsg;
 import top.yqingyu.common.utils.ThreadUtil;
 import top.yqingyu.trans$server.component.RegistryCenter;
 import top.yqingyu.trans$server.main.MainConfig;
+import top.yqingyu.trans$server.thread.RecordIpThread;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -40,7 +42,7 @@ public record ClientTransThread(Socket socket) implements Runnable, Callable<Boo
                     Socket socket = serverSocket.accept();
                     POOL.execute(new ClientTransThread(socket));
                 }
-            } catch (IOException e) {
+            } catch (Throwable e) {
                 log.error("奇奇怪怪异常", e);
             }
         });
@@ -64,11 +66,12 @@ public record ClientTransThread(Socket socket) implements Runnable, Callable<Boo
 
             MsgTransfer.writeQyMsg(socket, header);
             CLIENT_TRANS_POOL.put(msg.getFrom(), socket);
-            //TODO 此处会阻断其他链接。。 记得改下
-            POOL.execute(new UploadThread(msg.getFrom(), socket));
+            TransAdapter.adapter(msg);
         } else {
-            if (socket != null)
+            if (socket != null) {
+                RecordIpThread.execute(socket.getInetAddress().getHostAddress());
                 socket.close();
+            }
         }
 
     }
@@ -77,18 +80,18 @@ public record ClientTransThread(Socket socket) implements Runnable, Callable<Boo
     public Boolean call() throws Exception {
 
 
-        QyMsg QyMsg = null;
+        QyMsg qyMsg = null;
 
         try {
-            QyMsg = MsgTransfer.readQyMsg(this.socket, new LinkedBlockingQueue<>(), new AtomicBoolean(true));
+            qyMsg = MsgTransfer.readQyMsg(this.socket, new LinkedBlockingQueue<>(), new AtomicBoolean(true));
         } catch (Exception e) {
             RecordIpThread.execute(this.socket.getInetAddress().getHostAddress());
             log.error("传输线程异常", e);
             return false;
         }
 
-        if (RegistryCenter.isRegistered(QyMsg.getFrom())) {
-            log.info("连接成功 {}", QyMsg);
+        if (RegistryCenter.isRegistered(qyMsg.getFrom())) {
+            log.info("连接成功 {}", qyMsg);
             return true;
         } else {
             return false;

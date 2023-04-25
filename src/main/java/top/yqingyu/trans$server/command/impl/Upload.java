@@ -12,7 +12,7 @@ import top.yqingyu.trans$server.bean.ClientInfo;
 import top.yqingyu.trans$server.command.ParentCommand;
 import top.yqingyu.trans$server.component.RegistryCenter;
 import top.yqingyu.trans$server.main.MainConfig;
-import top.yqingyu.trans$server.thread.UploadThread;
+import top.yqingyu.trans$server.trans.UploadThread;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -76,7 +76,7 @@ public class Upload extends ParentCommand {
         if (isExist.size() != 0 && isExist.size() == list.size())
             return;
 
-        UploadThread.UPDATE_READY_CONTAINER.put(msg.getFrom(), list);
+        UploadThread.addTask(msg.getFrom(), list);
         qyMsg.putMsg("ok");
     }
 }

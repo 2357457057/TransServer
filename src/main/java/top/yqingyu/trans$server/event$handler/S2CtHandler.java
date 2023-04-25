@@ -8,7 +8,7 @@ import top.yqingyu.common.qymsg.netty.QyMsgServerHandler;
 import top.yqingyu.common.utils.ThreadUtil;
 import top.yqingyu.trans$server.component.RegistryCenter;
 import top.yqingyu.trans$server.main.MainConfig;
-import top.yqingyu.trans$server.thread.ClientTransThread;
+import top.yqingyu.trans$server.trans.ClientTransThread;
 import top.yqingyu.trans$server.thread.DealMsg;
 import top.yqingyu.trans$server.thread.RecordIpThread;
 

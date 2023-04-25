@@ -1,4 +1,4 @@
-package top.yqingyu.trans$server.thread;
+package top.yqingyu.trans$server.trans;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +63,11 @@ public record UploadThread(String clientId, Socket socket) implements Runnable {
             }
             bytes = new byte[defaultBufSize];
         } while (trans.isHasNext());
+        try {
+            socket.close();
+        } catch (IOException e) {
+            logger.error("", e);
+        }
     }
 
     private boolean check() {
@@ -90,5 +95,14 @@ public record UploadThread(String clientId, Socket socket) implements Runnable {
             }
         }
         return null;
+    }
+
+    public static void addTask(String id, List<TransObj> list) {
+        if (UPDATE_READY_CONTAINER.containsKey(id)) {
+            List<TransObj> transObjs = UPDATE_READY_CONTAINER.get(id);
+            transObjs.addAll(list);
+        } else {
+            UPDATE_READY_CONTAINER.put(id, list);
+        }
     }
 }

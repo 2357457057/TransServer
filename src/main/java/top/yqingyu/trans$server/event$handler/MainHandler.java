@@ -12,8 +12,9 @@ import top.yqingyu.common.utils.LocalDateTimeUtil;
 import top.yqingyu.common.utils.ThreadUtil;
 import top.yqingyu.trans$server.component.RegistryCenter;
 import top.yqingyu.trans$server.main.MainConfig;
-import top.yqingyu.trans$server.thread.ClientTransThread;
+import top.yqingyu.trans$server.trans.ClientTransThread;
 import top.yqingyu.trans$server.thread.DealMsg;
+import top.yqingyu.trans$server.thread.RecordIpThread;
 
 import java.net.InetSocketAddress;
 import java.time.LocalDateTime;
@@ -41,16 +42,17 @@ public class MainHandler extends QyMsgServerHandler {
                         return new DealMsg().deal(ctx, msg);
                     } else {
                         InetSocketAddress remoteAddress = (InetSocketAddress) ctx.channel().remoteAddress();
+                        RecordIpThread.execute(remoteAddress.getHostString());
                         log.info("未注册的消息关闭连接{}:{} {} ", remoteAddress.getHostString(), remoteAddress.getPort(), msg);
                         ctx.close();
                     }
                 }
                 case HEART_BEAT -> {
                     if (RegistryCenter.isRegistered(msg.getFrom())) {
-                        log.debug("{}", msg);
                         return null;
                     } else {
                         InetSocketAddress remoteAddress = (InetSocketAddress) ctx.channel().remoteAddress();
+                        RecordIpThread.execute(remoteAddress.getHostString());
                         log.info("未注册的消息关闭连接{}:{} {} ", remoteAddress.getHostString(), remoteAddress.getPort(), msg);
                         ctx.close();
                     }

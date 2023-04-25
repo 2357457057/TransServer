@@ -12,7 +12,7 @@ import top.yqingyu.common.utils.IoUtil;
 import top.yqingyu.common.utils.ThreadUtil;
 import top.yqingyu.trans$server.component.RegistryCenter;
 import top.yqingyu.trans$server.main.MainConfig;
-import top.yqingyu.trans$server.thread.ClientTransThread;
+import top.yqingyu.trans$server.trans.ClientTransThread;
 
 import java.io.IOException;
 import java.io.InputStream;
