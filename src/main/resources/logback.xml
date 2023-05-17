@@ -48,6 +48,24 @@
             <onMismatch>DENY</onMismatch>
         </filter>
     </appender>
+    <appender name="warnAppender" class="RollingFileAppender">
+        <file>${log.filePath}/warn/warn.log</file>
+        <rollingPolicy class="TimeBasedRollingPolicy">
+            <fileNamePattern>${log.filePath}/warn/warn.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <maxHistory>${log.maxHistory}</maxHistory>
+        </rollingPolicy>
+        <encoder class="PatternLayoutEncoder">
+            <pattern>${log.pattern}</pattern>
+        </encoder>
+        <triggeringPolicy class="SizeBasedTriggeringPolicy">
+            <maxFileSize>100MB</maxFileSize>
+        </triggeringPolicy>
+        <filter class="LevelFilter">
+            <level>WARN</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
 
     <appender name="errorAppender" class="RollingFileAppender">
         <file>${log.filePath}/error/error.log</file>
@@ -95,6 +113,7 @@
         <appender-ref ref="debugAppender"/>
         <appender-ref ref="consoleAppender"/>
         <appender-ref ref="infoAppender"/>
+        <appender-ref ref="warnAppender"/>
         <appender-ref ref="errorAppender"/>
     </root>
 </configuration>
