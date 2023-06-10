@@ -37,7 +37,7 @@ public class Download extends ParentCommand {
                 fileDeal(transObj, list);
             }
         }
-        DownloadThread.addTask(from, list);
+        DownloadThread.addTask(from, existsList);
         QyMsg clone = MainConfig.NORM_MSG.clone();
         clone.putMsg("ok");
         rtnMsg.add(clone);
@@ -49,20 +49,20 @@ public class Download extends ParentCommand {
         File file = new File(fileName);
         queue.add(file);
 
-        while (queue.size() > 0) {
+        while (!queue.isEmpty()) {
             File poll = queue.poll();
             if (poll != null && poll.exists()) {
                 if (poll.isFile()) {
                     TransObj clone = ObjectUtil.cloneObjSerial(transObj);
                     clone.setSize(poll.length());
-                    clone.setFileName(poll.getAbsolutePath());
+                    clone.setFileName(poll.getName());
+                    clone.setSavePath(poll.getAbsolutePath());
                     list.add(clone);
-                } else if (file.isDirectory()) {
-                    queue.addAll(Arrays.asList(Objects.requireNonNull(file.listFiles())));
+                } else if (poll.isDirectory()) {
+                    queue.addAll(Arrays.asList(Objects.requireNonNull(poll.listFiles())));
                 }
-                return true;
             } else {
-                return false;
+                break;
             }
         }
 

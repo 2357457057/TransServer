@@ -4,7 +4,7 @@ server:
   comm_port: 4731
   msg_timeout: 5000
   max_registry_num: 300
-  client_response_timeout: 2000
+  client_response_timeout: 6000
   ac_str: okkkko
   heart_beat: HEART_BEAT
   heart-beat-percent: 0
@@ -17,6 +17,6 @@ server:
     timeout: 30000
   IP_REC:
     pool_size: 8
-    host: http://yqingyu.com:4728
+    host: https://yqingyu.cn:4728
     account: f41asd56f1sd
     pwd: qy&{1010}

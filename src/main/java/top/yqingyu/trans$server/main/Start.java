@@ -13,6 +13,7 @@ import top.yqingyu.trans$server.event$handler.MainHandler;
 import top.yqingyu.trans$server.event$handler.S2CtHandler;
 import top.yqingyu.trans$server.exception.ExceptionHandle;
 import top.yqingyu.trans$server.thread.ClientMonitorThread;
+import top.yqingyu.trans$server.thread.RecordIpThread;
 import top.yqingyu.trans$server.trans.ClientTransThread;
 
 import java.lang.management.ManagementFactory;
