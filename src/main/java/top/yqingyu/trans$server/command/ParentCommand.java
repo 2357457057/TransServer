@@ -82,6 +82,7 @@ public class ParentCommand {
     void addMsgId(List<QyMsg> rtnMsg, QyMsg msg) {
         String msgId = msg.gainMsgId();
         for (QyMsg qyMsg : rtnMsg) {
+            qyMsg.setDataType(msg.getDataType());
             qyMsg.putMsgId(msgId);
         }
 
