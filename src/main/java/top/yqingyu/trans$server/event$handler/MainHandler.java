@@ -74,8 +74,8 @@ public class MainHandler extends QyMsgServerHandler {
         ClientTransThread.POOL.execute(futureTask);
         QyMsg rtnMsg = futureTask.get(MainConfig.CLIENT_RESPONSE_TIMEOUT, TimeUnit.MILLISECONDS);
         long micros = LocalDateTimeUtil.between(now1, LocalDateTime.now(), ChronoUnit.MICROS);
-        log.debug("Req  >>>>>>>>> >> {}", msg);
-        log.debug("Resp {} micros >> {}", micros, msg);
+        log.debug("Req {}", msg);
+        log.debug("Resp {} micros {}", micros, rtnMsg);
         return rtnMsg;
     }
 }
