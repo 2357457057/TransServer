@@ -1,11 +1,12 @@
 package top.yqingyu.trans$server.command.impl;
 
 import io.netty.channel.ChannelHandlerContext;
+import top.yqingyu.common.qydata.ConcurrentDataMap;
 import top.yqingyu.common.qydata.DataMap;
 import top.yqingyu.common.qymsg.QyMsg;
 import top.yqingyu.common.qymsg.extra.bean.TransObj;
 import top.yqingyu.common.utils.ObjectUtil;
-import top.yqingyu.common.utils.ReflectionUtil;
+import top.yqingyu.common.utils.UUIDUtil;
 import top.yqingyu.trans$server.annotation.Command;
 import top.yqingyu.trans$server.bean.ClientInfo;
 import top.yqingyu.trans$server.command.ParentCommand;
@@ -31,23 +32,23 @@ public class Download extends ParentCommand {
         list.add(dataMap.getObject("download", TransObj.class));
         ClientInfo clientInfo = RegistryCenter.getClientInfo(from);
         String currentPath = clientInfo.getCurrentPath();
-        List<TransObj> existsList = new ArrayList<>();
+        ConcurrentDataMap<String,TransObj> existsMap = new ConcurrentDataMap<>();
         for (TransObj transObj : list) {
-            if (!fileDeal(transObj, existsList)) {
-                transObj.setFileName(currentPath + transObj.getFileName());
-                fileDeal(transObj, list);
-            }
+            fileDeal(transObj, currentPath, existsMap);
         }
-        DownloadThread.addTask(from, existsList);
+        DownloadThread.addTask(from, existsMap);
         QyMsg clone = MainConfig.NORM_MSG.clone();
         clone.putMsg("ok");
         rtnMsg.add(clone);
     }
 
-    boolean fileDeal(TransObj transObj, List<TransObj> list) throws IOException, ClassNotFoundException {
+    void fileDeal(TransObj transObj, String curPath, ConcurrentDataMap<String,TransObj> existsMap) throws IOException, ClassNotFoundException {
         String fileName = transObj.getFileName();
         LinkedList<File> queue = new LinkedList<>();
         File file = new File(fileName);
+        if (!file.exists())
+            file = new File(curPath + fileName);
+
         queue.add(file);
 
         while (!queue.isEmpty()) {
@@ -58,7 +59,8 @@ public class Download extends ParentCommand {
                     clone.setSize(poll.length());
                     clone.setFileName(poll.getName());
                     clone.setSavePath(poll.getAbsolutePath());
-                    list.add(clone);
+                    clone.setFileId(UUIDUtil.randomUUID().toString2());
+                    existsMap.put(clone.getFileId(), clone);
                 } else if (poll.isDirectory()) {
                     queue.addAll(Arrays.asList(Objects.requireNonNull(poll.listFiles())));
                 }
@@ -67,7 +69,6 @@ public class Download extends ParentCommand {
             }
         }
 
-        return true;
     }
 
 }
