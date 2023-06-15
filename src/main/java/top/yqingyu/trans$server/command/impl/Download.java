@@ -27,7 +27,8 @@ public class Download extends ParentCommand {
     protected void deal(ChannelHandlerContext ctx, QyMsg msg, ArrayList<QyMsg> rtnMsg) throws Exception {
         DataMap dataMap = msg.getDataMap();
         String from = msg.getFrom();
-        List<TransObj> list = dataMap.getList("download", TransObj.class);
+        List<TransObj> list = new ArrayList<>();
+        list.add(dataMap.getObject("download", TransObj.class));
         ClientInfo clientInfo = RegistryCenter.getClientInfo(from);
         String currentPath = clientInfo.getCurrentPath();
         List<TransObj> existsList = new ArrayList<>();
