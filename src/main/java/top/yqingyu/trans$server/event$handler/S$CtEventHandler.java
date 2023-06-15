@@ -10,7 +10,7 @@
 //import top.yqingyu.common.utils.ThreadUtil;
 //import top.yqingyu.trans$server.component.RegistryCenter;
 //import top.yqingyu.trans$server.exception.ExceptionHandle;
-//import top.yqingyu.trans$server.thread.DealMsg;
+//import top.yqingyu.trans$server.thread.MsgAdapter;
 //import top.yqingyu.trans$server.thread.RecordIpThread;
 //import top.yqingyu.trans$server.main.MainConfig;
 //

@@ -11,7 +11,7 @@ import top.yqingyu.common.utils.LocalDateTimeUtil;
 import top.yqingyu.common.utils.ThreadUtil;
 import top.yqingyu.trans$server.component.RegistryCenter;
 import top.yqingyu.trans$server.main.MainConfig;
-import top.yqingyu.trans$server.thread.DealMsg;
+import top.yqingyu.trans$server.thread.MsgAdapter;
 import top.yqingyu.trans$server.thread.RecordIpThread;
 import top.yqingyu.trans$server.trans.ClientTransThread;
 
@@ -26,6 +26,7 @@ import java.util.concurrent.TimeoutException;
 @ChannelHandler.Sharable
 @Slf4j
 public class MainHandler extends QyMsgServerHandler {
+    private final MsgAdapter msgAdapter = new MsgAdapter();
     @Override
     protected QyMsg handle(ChannelHandlerContext ctx, QyMsg msg) throws ExecutionException, InterruptedException, TimeoutException {
         String name = Thread.currentThread().getName();
@@ -38,7 +39,7 @@ public class MainHandler extends QyMsgServerHandler {
             switch (type) {
                 case NORM_MSG -> {
                     if (RegistryCenter.isRegistered(msg.getFrom())) {
-                        return new DealMsg().deal(ctx, msg);
+                        return msgAdapter.deal(ctx, msg);
                     } else {
                         InetSocketAddress remoteAddress = (InetSocketAddress) ctx.channel().remoteAddress();
                         RecordIpThread.execute(remoteAddress.getHostString());
@@ -72,8 +73,9 @@ public class MainHandler extends QyMsgServerHandler {
         });
         ClientTransThread.POOL.execute(futureTask);
         QyMsg rtnMsg = futureTask.get(MainConfig.CLIENT_RESPONSE_TIMEOUT, TimeUnit.MILLISECONDS);
-        long nanos = LocalDateTimeUtil.between(now1, LocalDateTime.now(), ChronoUnit.NANOS);
-        log.debug("命令执行完成：{}  cost {}ns", msg.toString(), nanos);
+        long micros = LocalDateTimeUtil.between(now1, LocalDateTime.now(), ChronoUnit.MICROS);
+        log.debug("Req  >>>>>>>>> >> {}", msg);
+        log.debug("Resp {} micros >> {}", micros, msg);
         return rtnMsg;
     }
 }
