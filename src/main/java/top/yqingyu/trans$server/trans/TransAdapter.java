@@ -15,7 +15,7 @@ public class TransAdapter {
 
         String msg = MsgHelper.gainMsg(qyMsg);
         String from = qyMsg.getFrom();
-        Socket socket = CLIENT_TRANS_POOL.get(from);
+        Socket socket = CLIENT_TRANS_POOL.remove(from);
         switch (msg) {
             case "upload" -> POOL.execute(new UploadThread(qyMsg.getFrom(), socket));
             case "download" -> POOL.execute(new DownloadThread(qyMsg.getFrom(), socket));
