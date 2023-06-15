@@ -1,6 +1,5 @@
 package top.yqingyu.trans$server.trans;
 
-import com.alibaba.fastjson2.JSON;
 import lombok.extern.slf4j.Slf4j;
 import top.yqingyu.common.qydata.ConcurrentDataMap;
 import top.yqingyu.common.qymsg.MsgTransfer;
@@ -8,6 +7,7 @@ import top.yqingyu.common.qymsg.extra.bean.TransObj;
 import top.yqingyu.common.utils.IoUtil;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.net.Socket;
 import java.util.Iterator;
@@ -19,7 +19,7 @@ public record DownloadThread(String clientId, Socket socket) implements Runnable
 
     @Override
     public void run() {
-        List<TransObj> transObjs = DOWNLOAD_READY_CONTAINER.get(clientId);
+        List<TransObj> transObjs = DOWNLOAD_READY_CONTAINER.remove(clientId);
         try {
             MsgTransfer.writeQyBytes(socket, IoUtil.objToSerializBytes((Serializable) transObjs));
         } catch (Exception ignored) {
@@ -35,6 +35,10 @@ public record DownloadThread(String clientId, Socket socket) implements Runnable
                 log.error("", e);
             }
             iterator.remove();
+        }
+        try {
+            socket.close();
+        } catch (IOException ignored) {
         }
     }
 

@@ -9,7 +9,7 @@ import top.yqingyu.common.utils.ThreadUtil;
 import top.yqingyu.trans$server.component.RegistryCenter;
 import top.yqingyu.trans$server.main.MainConfig;
 import top.yqingyu.trans$server.trans.ClientTransThread;
-import top.yqingyu.trans$server.thread.DealMsg;
+import top.yqingyu.trans$server.thread.MsgAdapter;
 import top.yqingyu.trans$server.thread.RecordIpThread;
 
 import java.net.InetSocketAddress;
@@ -21,6 +21,7 @@ import java.util.concurrent.TimeoutException;
 @Slf4j
 @ChannelHandler.Sharable
 public class S2CtHandler extends QyMsgServerHandler {
+    private final MsgAdapter msgAdapter = new MsgAdapter();
     @Override
     protected QyMsg handle(ChannelHandlerContext ctx, QyMsg msg) throws ExecutionException, InterruptedException, TimeoutException {
         String name = Thread.currentThread().getName();
@@ -28,8 +29,7 @@ public class S2CtHandler extends QyMsgServerHandler {
             ThreadUtil.setThisThreadName(name);
             if (RegistryCenter.isRegistered(msg.getFrom())) {
                 log.debug("{}", msg);
-                return new DealMsg().deal2(ctx, msg);
-
+                return msgAdapter.deal2(ctx, msg);
             } else {
                 InetSocketAddress socketAddress = (InetSocketAddress) ctx.channel().remoteAddress();
                 RecordIpThread.execute(socketAddress.getHostString());

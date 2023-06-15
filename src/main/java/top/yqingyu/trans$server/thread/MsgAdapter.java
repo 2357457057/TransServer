@@ -20,15 +20,11 @@ import static top.yqingyu.trans$server.command.ParentCommand.COMMAND;
 
 @SuppressWarnings("all")
 @Slf4j
-public class DealMsg {
+public class MsgAdapter {
 
     public QyMsg deal(ChannelHandlerContext ctx, QyMsg qyMsg) throws Exception {
-
-        log.info("DEAL> {}", qyMsg.toString());
         AtomicReference<ParentCommand> a = new AtomicReference<>();
-
         QyMsg clone;
-
         try {
             for (int i = 0; i < COMMAND.size(); i++) {
                 ParentCommand parentCommand = COMMAND.get(i);
@@ -46,7 +42,6 @@ public class DealMsg {
             try {
                 ParentCommand parentCommand = a.get();
                 ArrayList<QyMsg> qyMsgs = parentCommand.dealCommand(ctx, qyMsg);
-                log.info("执行类: {}", parentCommand.getClass().getSimpleName());
                 return qyMsgs.get(0);
             } catch (Exception e) {
                 clone = MainConfig.ERR_MSG.clone();
