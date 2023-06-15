@@ -14,18 +14,18 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Iterator;
-import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 public record DownloadThread(String clientId, Socket socket) implements Runnable {
-    public static final ConcurrentDataMap<String, ConcurrentDataMap<String,TransObj>> DOWNLOAD_READY_CONTAINER = new ConcurrentDataMap<>();
+    public static final ConcurrentHashMap<String, ConcurrentHashMap<String,TransObj>> DOWNLOAD_READY_CONTAINER = new ConcurrentHashMap<>();
 
     @Override
     public void run() {
         LocalDateTime now = LocalDateTime.now();
-        ConcurrentDataMap<String,TransObj> transObjs = DOWNLOAD_READY_CONTAINER.remove(clientId);
+        ConcurrentHashMap<String,TransObj> transObjs = DOWNLOAD_READY_CONTAINER.remove(clientId);
         try {
-            MsgTransfer.writeQyBytes(socket, IoUtil.objToSerializBytes((Serializable) transObjs));
+            MsgTransfer.writeQyBytes(socket, IoUtil.objToSerializBytes(transObjs));
         } catch (Exception ignored) {
             log.error("", ignored);
         }
@@ -49,9 +49,9 @@ public record DownloadThread(String clientId, Socket socket) implements Runnable
         log.info("传输完成 cost {}", LocalDateTimeUtil.between(now, LocalDateTime.now()));
     }
 
-    public static void addTask(String id, ConcurrentDataMap<String,TransObj> map) {
+    public static void addTask(String id, ConcurrentHashMap<String,TransObj> map) {
         if (DOWNLOAD_READY_CONTAINER.containsKey(id)) {
-            ConcurrentDataMap<String,TransObj> transObjs = DOWNLOAD_READY_CONTAINER.get(id);
+            ConcurrentHashMap<String,TransObj> transObjs = DOWNLOAD_READY_CONTAINER.get(id);
             transObjs.putAll(map);
         } else {
             DOWNLOAD_READY_CONTAINER.put(id, map);

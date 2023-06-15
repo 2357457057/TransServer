@@ -17,6 +17,7 @@ import top.yqingyu.trans$server.trans.DownloadThread;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Command
 public class Download extends ParentCommand {
@@ -32,7 +33,7 @@ public class Download extends ParentCommand {
         list.add(dataMap.getObject("download", TransObj.class));
         ClientInfo clientInfo = RegistryCenter.getClientInfo(from);
         String currentPath = clientInfo.getCurrentPath();
-        ConcurrentDataMap<String,TransObj> existsMap = new ConcurrentDataMap<>();
+        ConcurrentHashMap<String,TransObj> existsMap = new ConcurrentHashMap<>();
         for (TransObj transObj : list) {
             fileDeal(transObj, currentPath, existsMap);
         }
@@ -42,7 +43,7 @@ public class Download extends ParentCommand {
         rtnMsg.add(clone);
     }
 
-    void fileDeal(TransObj transObj, String curPath, ConcurrentDataMap<String,TransObj> existsMap) throws IOException, ClassNotFoundException {
+    void fileDeal(TransObj transObj, String curPath, ConcurrentHashMap<String,TransObj> existsMap) throws IOException, ClassNotFoundException {
         String fileName = transObj.getFileName();
         LinkedList<File> queue = new LinkedList<>();
         File file = new File(fileName);
