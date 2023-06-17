@@ -3,15 +3,14 @@ package top.yqingyu.trans$server.command.impl;
 import com.alibaba.fastjson2.JSONObject;
 import io.netty.channel.ChannelHandlerContext;
 import top.yqingyu.common.annotation.Init;
-import top.yqingyu.common.qymsg.extra.bean.KeyValue;
-import top.yqingyu.common.qymsg.extra.bean.StringKey;
-import top.yqingyu.trans$server.annotation.Command;
-import top.yqingyu.trans$server.command.ParentCommand;
 import top.yqingyu.common.qydata.ChoiceHashMap;
 import top.yqingyu.common.qydata.ConcurrentQyMap;
 import top.yqingyu.common.qydata.DataMap;
 import top.yqingyu.common.qymsg.MsgHelper;
 import top.yqingyu.common.qymsg.QyMsg;
+import top.yqingyu.common.qymsg.extra.bean.KeyValue;
+import top.yqingyu.common.qymsg.extra.bean.StringKey;
+import top.yqingyu.trans$server.annotation.Command;
 import top.yqingyu.trans$server.main.MainConfig;
 
 import java.lang.reflect.Field;
@@ -25,12 +24,10 @@ import java.util.ArrayList;
  * @description
  * @createTime 2023年01月09日 23:00:00
  */
+@Init
 @Command
-public class Key extends ParentCommand {
+public class Key {
 
-    public Key() {
-        super("key");
-    }
 
     public static final ChoiceHashMap<KeyValue.DataType, Method> DEAL_METHODS = new ChoiceHashMap<>();
     public static final ConcurrentQyMap<KeyValue.DataType, ConcurrentQyMap<String, Object>> ROOT_CONTAINER = new ConcurrentQyMap<>();
@@ -65,7 +62,7 @@ public class Key extends ParentCommand {
         ROOT_CONTAINER.put(KeyValue.DataType.STRING, new ConcurrentQyMap<>());
     }
 
-    @Override
+    @Command("key")
     protected void deal(ChannelHandlerContext ctx, QyMsg msg, ArrayList<QyMsg> rtnMsg) throws Exception {
         DataMap map = msg.getDataMap();
         KeyValue key = map.getObject("key", KeyValue.class);

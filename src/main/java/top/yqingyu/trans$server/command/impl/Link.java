@@ -2,13 +2,12 @@ package top.yqingyu.trans$server.command.impl;
 
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
-import top.yqingyu.common.utils.LocalDateTimeUtil;
-import top.yqingyu.trans$server.annotation.Command;
-import top.yqingyu.trans$server.bean.ClientInfo;
-import top.yqingyu.trans$server.command.ParentCommand;
 import top.yqingyu.common.qydata.DataMap;
 import top.yqingyu.common.qymsg.MsgHelper;
 import top.yqingyu.common.qymsg.QyMsg;
+import top.yqingyu.common.utils.LocalDateTimeUtil;
+import top.yqingyu.trans$server.annotation.Command;
+import top.yqingyu.trans$server.bean.ClientInfo;
 import top.yqingyu.trans$server.component.RegistryCenter;
 import top.yqingyu.trans$server.main.MainConfig;
 
@@ -25,17 +24,13 @@ import java.util.concurrent.TimeoutException;
  * @Description 链接
  * @createTime 2022年05月08日 14:32:00
  */
-@Command
 @Slf4j
-public class Link extends ParentCommand {
+@Command
+public class Link {
 
     private static final String commandRegx = "^(link)(( )((-)([lhseip]{1,5}|show|help|link)(( )([\\u4e00-\\u9fa5\\w/.\\\\_-]{0,200}))?)|([\\u4e00-\\u9fa5\\w/.\\\\_]{0,200}))?$";
 
-    public Link() {
-        super(commandRegx);
-    }
-
-    @Override
+    @Command(commandRegx)
     protected void deal(ChannelHandlerContext ctx, QyMsg msg, ArrayList<QyMsg> rtnMsg) throws Exception {
         StringBuilder sb = new StringBuilder();
 
@@ -112,7 +107,7 @@ public class Link extends ParentCommand {
                                 sb.append(futureTask.get(10, TimeUnit.SECONDS));
                             } catch (TimeoutException e) {
                                 run[0] = false;
-                                log.info("linked连接超时 客户端ip:{} |E：{}", remoteClient.getClientId(), e);
+                                log.info("linked连接超时 客户端ip:{} |E：", remoteClient.getClientId(), e);
                                 sb.append(remoteClient.getClientId());
                                 sb.append(" 连接超时\n");
                             }

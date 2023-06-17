@@ -7,6 +7,8 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -21,7 +23,16 @@ public class test {
 
 
     public static void main(String[] args) throws Exception {
+        String aa = "aaaaa";
+        aa.matches(".*");
         System.out.println(Math.ceil((10 + 0D) / 3));
+
+
+        Pattern compile = Pattern.compile(".*");
+        Matcher matcher = compile.matcher(aa);
+        matcher.matches();
+
+
 //
 //                String aa = "java.util.concurrent.ExecutionException: java.lang.NullPointerException: Cannot invoke \"java.lang.Boolean.booleanValue()\" because the return value of \"java.util.Hashtable.get(Object)\"";
 //

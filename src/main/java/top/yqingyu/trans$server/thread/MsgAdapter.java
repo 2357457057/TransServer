@@ -2,15 +2,15 @@ package top.yqingyu.trans$server.thread;
 
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
-import top.yqingyu.trans$server.bean.ClientInfo;
-import top.yqingyu.trans$server.command.ParentCommand;
 import top.yqingyu.common.qydata.DataMap;
 import top.yqingyu.common.qymsg.MsgHelper;
 import top.yqingyu.common.qymsg.MsgType;
 import top.yqingyu.common.qymsg.QyMsg;
+import top.yqingyu.trans$server.bean.Bean;
+import top.yqingyu.trans$server.bean.ClientInfo;
 import top.yqingyu.trans$server.component.RegistryCenter;
-import top.yqingyu.trans$server.main.S$CtConfig;
 import top.yqingyu.trans$server.main.MainConfig;
+import top.yqingyu.trans$server.main.S$CtConfig;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
@@ -23,13 +23,13 @@ import static top.yqingyu.trans$server.command.ParentCommand.COMMAND;
 public class MsgAdapter {
 
     public QyMsg deal(ChannelHandlerContext ctx, QyMsg qyMsg) throws Exception {
-        AtomicReference<ParentCommand> a = new AtomicReference<>();
+        AtomicReference<Bean> a = new AtomicReference<>();
         QyMsg clone;
         try {
             for (int i = 0; i < COMMAND.size(); i++) {
-                ParentCommand parentCommand = COMMAND.get(i);
-                if (parentCommand.isMatch(MsgHelper.gainMsg(qyMsg))) {
-                    a.set(parentCommand);
+                Bean bean = COMMAND.get(i);
+                if (bean.match(MsgHelper.gainMsg(qyMsg))) {
+                    a.set(bean);
                     break;
                 }
             }
@@ -40,8 +40,8 @@ public class MsgAdapter {
 
         if (a.get() != null) {
             try {
-                ParentCommand parentCommand = a.get();
-                ArrayList<QyMsg> qyMsgs = parentCommand.dealCommand(ctx, qyMsg);
+                Bean bean = a.get();
+                ArrayList<QyMsg> qyMsgs = bean.invoke(ctx, qyMsg);
                 return qyMsgs.get(0);
             } catch (Exception e) {
                 clone = MainConfig.ERR_MSG.clone();

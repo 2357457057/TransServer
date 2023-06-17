@@ -1,7 +1,6 @@
 package top.yqingyu.trans$server.command.impl;
 
 import io.netty.channel.ChannelHandlerContext;
-import top.yqingyu.common.qydata.ConcurrentDataMap;
 import top.yqingyu.common.qydata.DataMap;
 import top.yqingyu.common.qymsg.QyMsg;
 import top.yqingyu.common.qymsg.extra.bean.TransObj;
@@ -9,7 +8,6 @@ import top.yqingyu.common.utils.ObjectUtil;
 import top.yqingyu.common.utils.UUIDUtil;
 import top.yqingyu.trans$server.annotation.Command;
 import top.yqingyu.trans$server.bean.ClientInfo;
-import top.yqingyu.trans$server.command.ParentCommand;
 import top.yqingyu.trans$server.component.RegistryCenter;
 import top.yqingyu.trans$server.main.MainConfig;
 import top.yqingyu.trans$server.trans.DownloadThread;
@@ -20,13 +18,9 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Command
-public class Download extends ParentCommand {
-    public Download() {
-        super("download");
-    }
-
-    @Override
-    protected void deal(ChannelHandlerContext ctx, QyMsg msg, ArrayList<QyMsg> rtnMsg) throws Exception {
+public class Download  {
+    @Command("download")
+    public void deal(ChannelHandlerContext ctx, QyMsg msg, ArrayList<QyMsg> rtnMsg) throws Exception {
         DataMap dataMap = msg.getDataMap();
         String from = msg.getFrom();
         List<TransObj> list = new ArrayList<>();

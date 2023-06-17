@@ -1,10 +1,9 @@
 package top.yqingyu.trans$server.command.impl;
 
 import io.netty.channel.ChannelHandlerContext;
-import top.yqingyu.trans$server.annotation.Command;
-import top.yqingyu.trans$server.command.ParentCommand;
 import top.yqingyu.common.qymsg.MsgHelper;
 import top.yqingyu.common.qymsg.QyMsg;
+import top.yqingyu.trans$server.annotation.Command;
 import top.yqingyu.trans$server.component.RegistryCenter;
 import top.yqingyu.trans$server.main.MainConfig;
 
@@ -20,15 +19,11 @@ import java.util.Iterator;
  * @modified by
  */
 @Command
-public class Reg extends ParentCommand {
+public class Reg  {
 
     private static final String commandRegx = "reg.*";
 
-    public Reg() {
-        super(commandRegx);
-    }
-
-    @Override
+    @Command(commandRegx)
     protected void deal(ChannelHandlerContext ctx, QyMsg msg, ArrayList<QyMsg> rtnMsg) throws Exception {
         StringBuilder sb = new StringBuilder();
 

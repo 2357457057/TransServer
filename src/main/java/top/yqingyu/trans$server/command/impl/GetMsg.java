@@ -2,11 +2,10 @@ package top.yqingyu.trans$server.command.impl;
 
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
-import top.yqingyu.trans$server.annotation.Command;
-import top.yqingyu.trans$server.command.ParentCommand;
 import top.yqingyu.common.qymsg.DataType;
 import top.yqingyu.common.qymsg.MsgHelper;
 import top.yqingyu.common.qymsg.QyMsg;
+import top.yqingyu.trans$server.annotation.Command;
 import top.yqingyu.trans$server.main.MainConfig;
 
 import java.util.ArrayList;
@@ -21,16 +20,11 @@ import java.util.ArrayList;
  */
 @Slf4j
 @Command
-public class GetMsg extends ParentCommand {
+public class GetMsg  {
 
-    private static final String commandRegx = "getMsg[ \\d]*";
 
-    public GetMsg() {
-        super(commandRegx);
-    }
-
-    @Override
-    protected void deal(ChannelHandlerContext ctx, QyMsg msg, ArrayList<QyMsg> rtnMsg) throws Exception {
+    @Command("getMsg[ \\d]*")
+    public void deal(ChannelHandlerContext ctx, QyMsg msg, ArrayList<QyMsg> rtnMsg) throws Exception {
         String s = MsgHelper.gainMsg(msg);
         String replace = s.replaceAll("getMsg| ", "");
         int i = Integer.parseInt(replace);

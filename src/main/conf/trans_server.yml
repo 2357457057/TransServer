@@ -9,7 +9,7 @@ server:
   heart_beat: HEART_BEAT
   heart-beat-percent: 0
   msg:
-    body-length-max: 2048
+    body-length-max: 102400000
   CMT:
     init: 5
     period: 20

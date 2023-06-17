@@ -3,11 +3,13 @@ package top.yqingyu.trans$server.command.impl;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import top.yqingyu.trans$server.annotation.Command;
+import top.yqingyu.trans$server.bean.Bean;
 import top.yqingyu.trans$server.command.ParentCommand;
 import top.yqingyu.common.qymsg.QyMsg;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+
 import static top.yqingyu.trans$server.main.MainConfig.*;
 
 /**
@@ -19,24 +21,21 @@ import static top.yqingyu.trans$server.main.MainConfig.*;
  */
 @Slf4j
 @Command
-public class GetAll extends ParentCommand {
+public class GetAll {
 
 
-    public GetAll() {
-        super("getcmd");
-    }
-
-    @Override
+    @Command("getcmd")
     protected void deal(ChannelHandlerContext ctx, QyMsg msg, ArrayList<QyMsg> rtnMsg) throws Exception {
         QyMsg clone = NORM_MSG.clone();
         rtnMsg.add(clone);
         Field commands = ParentCommand.class.getDeclaredField("COMMAND");
         commands.setAccessible(true);
-        ArrayList<ParentCommand> o = (ArrayList<ParentCommand>)commands.get(null);
+        @SuppressWarnings("unchecked")
+        ArrayList<Bean> o = (ArrayList<Bean>) commands.get(null);
 
         StringBuilder sb = new StringBuilder();
-        for (ParentCommand parentCommand : o) {
-            sb.append(parentCommand.getCommandRegx()).append("\n");
+        for (Bean bean : o) {
+            sb.append(bean.getRegex()).append("\n");
         }
         clone.putMsg(sb);
     }
