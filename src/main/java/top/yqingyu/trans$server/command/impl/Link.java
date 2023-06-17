@@ -21,7 +21,6 @@ import java.util.concurrent.TimeoutException;
  * @author YYJ
  * @version 1.0.0
  * @ClassName top.yqingyu.command.impl.Link
- * @Description 链接
  * @createTime 2022年05月08日 14:32:00
  */
 @Slf4j

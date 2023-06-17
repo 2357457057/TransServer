@@ -101,7 +101,7 @@ public class Key {
                 }
             }
             case REMOVE -> {
-                String o = (String) STRING_CONTAINER.remove(key);
+                STRING_CONTAINER.remove(key);
                 clone.putMsg("success");
                 dataMap.put("code", "0000");
             }

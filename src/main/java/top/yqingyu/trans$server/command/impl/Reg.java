@@ -14,9 +14,7 @@ import java.util.Iterator;
 /**
  * @author YYJ
  * @version 1.0.0
- * @date 2022/4/24 4:20
  * @description 注册信息
- * @modified by
  */
 @Command
 public class Reg  {
